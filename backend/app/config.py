@@ -15,6 +15,8 @@ class Settings(BaseModel):
     auth_collection: str = os.getenv("PB_AUTH_COLLECTION", "users")
     pb_batch_enabled: bool = os.getenv("PB_BATCH_ENABLED", "false").lower() in {"1", "true", "yes"}
     gps_refresh_seconds: int = int(os.getenv("GPS_REFRESH_SECONDS", "5"))
+    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     @property
     def origins(self) -> list[str]:

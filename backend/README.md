@@ -44,6 +44,8 @@ All supplied routes are implemented: dashboards; vehicle and driver CRUD/status;
 
 The AI endpoints currently use deterministic rules so demos are stable. Replace the scoring internals later without changing frontend contracts.
 
+Gemini-backed features are available at `POST /api/llm/fleet-assistant/chat` and `POST /api/llm/vehicle-documents/extract`. Set `GEMINI_API_KEY` in `.env`; `GEMINI_MODEL` defaults to `gemini-2.5-flash`. The document endpoint accepts PDF/JPEG/PNG/WebP up to 10 MB and can extract without saving by setting multipart field `saveToPocketBase=false`.
+
 All paginated list endpoints accept PocketBase-compatible `page`, `perPage`, `sort`, `filter`, `expand`, `fields`, and `skipTotal` parameters. Vehicle and driver delete routes enforce active-workflow safeguards. Vehicle images and documents can be uploaded with multipart requests under `/api/vehicles/{vehicle_id}/image` and `/api/vehicles/{vehicle_id}/documents`.
 
 Set `PB_BATCH_ENABLED=true` only after enabling PocketBase's batch Web API in its dashboard. Dispatch and trip-completion transitions will then use transactional batch requests; otherwise the tested sequential fallback is used.

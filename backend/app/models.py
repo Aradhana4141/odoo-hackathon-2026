@@ -85,3 +85,7 @@ class FleetLocationIn(Model):
     heading: float | None = Field(default=None, ge=0, lt=360)
     accuracy_meters: float | None = Field(default=None, alias="accuracyMeters", ge=0)
     recorded_at: datetime | None = Field(default=None, alias="recordedAt")
+
+
+class FleetAssistantRequest(Model):
+    question: str = Field(min_length=3, max_length=1000)
