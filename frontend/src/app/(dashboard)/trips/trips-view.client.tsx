@@ -73,7 +73,12 @@ export function TripsView({ boardData }: TripsViewProps) {
     }
   }, [completeState]);
 
-  const handleDispatch = async (id: string) => await dispatchTripAction(id);
+  const handleDispatch = async (id: string) => {
+    const result = await dispatchTripAction(id);
+    if (result?.error) {
+      alert(`Dispatch failed: ${result.error}`);
+    }
+  };
   const handleCancel = async (id: string) => await cancelTripAction(id);
 
   return (

@@ -46,10 +46,17 @@ export async function createTripAction(_prevState: any, formData: FormData) {
 export async function dispatchTripAction(tripId: string) {
   try {
     const client = await getAPIClient();
-    await client.POST("/trips/{id}/dispatch", {
+    const { error } = await client.POST("/trips/{id}/dispatch", {
       params: { path: { id: tripId } },
     });
-  } catch (_) {}
+
+    if (error) {
+      return { error: parseApiError(error) };
+    }
+  } catch (e: any) {
+    return { error: e.message || "Failed to establish server connection." };
+  }
+
   revalidatePath("/trips");
   return { success: true };
 }
