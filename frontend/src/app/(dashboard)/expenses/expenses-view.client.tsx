@@ -23,15 +23,16 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
     createExpenseAction,
     null,
   );
+  const actionState = state as { error?: string; success?: boolean } | null;
   const [expenseType, setExpenseType] = useState<"FUEL" | "OTHER">("FUEL");
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state?.success) {
+    if (actionState?.success) {
       setIsOpen(false);
       formRef.current?.reset();
     }
-  }, [state]);
+  }, [actionState]);
 
   const totalYtd =
     initialExpenses.items?.reduce((sum, item) => sum + item.amount, 0) || 34070;
@@ -164,9 +165,9 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
           action={formAction}
           className="flex flex-1 flex-col gap-6 overflow-y-auto p-6"
         >
-          {state?.error && (
+          {actionState?.error && (
             <div className="rounded-lg border border-error/20 bg-error-container p-3 font-medium text-error text-xs">
-              {state.error}
+              {actionState.error}
             </div>
           )}
 

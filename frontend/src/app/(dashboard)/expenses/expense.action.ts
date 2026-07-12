@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getAPIClient, parseApiError } from "@/utils/client";
 
 export async function createExpenseAction(_prevState: any, formData: FormData) {
   const vehicleId = formData.get("vehicleId")?.toString();
@@ -15,13 +16,13 @@ export async function createExpenseAction(_prevState: any, formData: FormData) {
     return { error: "Please populate all operational log fields." };
   }
 
-  // try {
-  //   const client = await getAPIClient();
-  //   const { error } = await client.POST("/expenses", {
-  //     body: { vehicleId, type, amount, liters, date },
-  //   });
-  //   if (error) return { error: error.message };
-  // } catch (_) {}
+  try {
+    const client = await getAPIClient();
+    const { error } = await client.POST("/expenses", {
+      body: { vehicleId, type, amount, liters, date },
+    });
+    if (error) return parseApiError(error);
+  } catch (_) {}
 
   revalidatePath("/expenses");
   return { success: true };

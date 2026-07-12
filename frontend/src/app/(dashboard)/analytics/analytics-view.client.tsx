@@ -1,4 +1,3 @@
-// src/app/(dashboard)/analytics/analytics-view.client.tsx
 "use client";
 
 import {
@@ -9,6 +8,15 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import type { components } from "@/../generated/openapi-schema";
 
 type AnalyticsViewProps = {
@@ -85,14 +93,14 @@ export function AnalyticsView({ analytics }: AnalyticsViewProps) {
         <div className="glass-panel relative flex flex-col gap-4 overflow-hidden rounded-3xl p-6">
           <div className="flex items-start justify-between">
             <span className="font-bold text-on-surface-variant text-xs uppercase tracking-widest">
-              Op. Cost / km
+              Total Op. Cost
             </span>
             <DollarSign className="h-5 w-5 text-secondary/70" />
           </div>
           <div className="flex items-baseline gap-1">
             <span className="font-mono text-on-surface-variant text-sm">$</span>
             <span className="font-bold text-3xl text-on-surface tracking-tight">
-              1.14
+              {totalCost.toLocaleString()}
             </span>
           </div>
           <div className="flex items-center gap-1 self-start rounded-md bg-error-container/10 px-2 py-1 font-semibold text-error text-xs">
@@ -104,15 +112,15 @@ export function AnalyticsView({ analytics }: AnalyticsViewProps) {
         <div className="glass-panel relative flex flex-col gap-4 overflow-hidden rounded-3xl p-6">
           <div className="flex items-start justify-between">
             <span className="font-bold text-on-surface-variant text-xs uppercase tracking-widest">
-              Fleet ROI
+              Total Revenue
             </span>
             <TrendingUp className="h-5 w-5 text-secondary/70" />
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-1">
+            <span className="font-mono text-on-surface-variant text-sm">$</span>
             <span className="font-bold text-3xl text-on-surface tracking-tight">
-              18.4
+              {totalRevenue.toLocaleString()}
             </span>
-            <span className="font-mono text-on-surface-variant text-xs">%</span>
           </div>
           <div className="flex items-center gap-1 self-start rounded-md bg-primary-container/10 px-2 py-1 font-semibold text-primary text-xs">
             <TrendingUp className="h-3.5 w-3.5" />
@@ -148,81 +156,78 @@ export function AnalyticsView({ analytics }: AnalyticsViewProps) {
             </div>
           </div>
 
-          <div className="relative mt-4 flex w-full flex-1 items-end">
-            <div className="pointer-events-none absolute inset-0 flex flex-col justify-between pb-8">
-              <div className="h-px w-full bg-outline-variant/20" />
-              <div className="h-px w-full bg-outline-variant/20" />
-              <div className="h-px w-full bg-outline-variant/20" />
-              <div className="h-px w-full bg-outline-variant/20" />
-              <div className="h-px w-full bg-outline-variant/20" />
-            </div>
-
-            <div className="-translate-x-full pointer-events-none absolute top-0 bottom-8 left-0 flex flex-col justify-between pr-2 font-mono text-[10px] text-outline-variant">
-              <span>$250k</span>
-              <span>$200k</span>
-              <span>$150k</span>
-              <span>$100k</span>
-              <span>$50k</span>
-            </div>
-
-            <div className="absolute inset-0 bottom-8 overflow-visible">
-              <svg
-                className="h-full w-full drop-shadow-[0_10px_20px_rgba(53,37,205,0.1)]"
-                preserveAspectRatio="none"
-                viewBox="0 0 1000 300"
+          <div className="relative mt-4 flex min-h-75 w-full flex-1 items-end">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={analytics.monthlyRevenueChart}
+                margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
               >
-                <title>Monthly Revenue Curve</title>
                 <defs>
-                  <linearGradient
-                    id="area-gradient"
-                    x1="0"
-                    x2="0"
-                    y1="0"
-                    y2="1"
-                  >
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                     <stop
-                      offset="0%"
+                      offset="5%"
                       stopColor="var(--color-primary)"
-                      stopOpacity="0.4"
+                      stopOpacity={0.4}
                     />
                     <stop
-                      offset="100%"
+                      offset="95%"
                       stopColor="var(--color-primary)"
-                      stopOpacity="0.0"
+                      stopOpacity={0}
                     />
-                  </linearGradient>
-                  <linearGradient
-                    id="line-gradient"
-                    x1="0"
-                    x2="1"
-                    y1="0"
-                    y2="0"
-                  >
-                    <stop offset="0%" stopColor="#4f46e5" />
-                    <stop offset="50%" stopColor="#3525cd" />
-                    <stop offset="100%" stopColor="#57dffe" />
                   </linearGradient>
                 </defs>
-                <path
-                  d="M0,300 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,150 950,50 1000,20 L1000,300 L0,300 Z"
-                  fill="url(#area-gradient)"
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="var(--color-outline-variant)"
+                  strokeOpacity={0.2}
                 />
-                <path
-                  d="M0,300 C150,250 250,150 400,180 C550,210 650,80 800,120 C900,150 950,50 1000,20"
-                  fill="none"
-                  stroke="url(#line-gradient)"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="4"
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: "var(--color-on-surface-variant)",
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                  dy={10}
                 />
-              </svg>
-            </div>
-
-            <div className="absolute bottom-0 left-0 flex w-full justify-between px-4 font-semibold text-on-surface-variant text-xs">
-              {analytics.monthlyRevenueChart.map((point) => (
-                <span key={point.label}>{point.label}</span>
-              ))}
-            </div>
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "var(--color-outline-variant)", fontSize: 10 }}
+                  tickFormatter={(value) => `$${value / 1000}k`}
+                  dx={-10}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(255,255,255,0.4)",
+                    backdropFilter: "blur(12px)",
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                  }}
+                  itemStyle={{
+                    color: "var(--color-primary)",
+                    fontWeight: "bold",
+                  }}
+                  labelStyle={{
+                    color: "var(--color-on-surface-variant)",
+                    fontWeight: "bold",
+                    marginBottom: "4px",
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--color-primary)"
+                  strokeWidth={4}
+                  fillOpacity={1}
+                  fill="url(#colorValue)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 

@@ -2,8 +2,8 @@ import type { components } from "@/../generated/openapi-schema";
 import { ExpensesView } from "./expenses-view.client";
 
 export default async function ExpensesPage() {
-  let expensesData: components["schemas"]["PaginatedExpenses"] | null = null;
-  let vehicles: components["schemas"]["Vehicle"][] = [];
+  const expensesData: components["schemas"]["PaginatedExpenses"] | null = null;
+  const vehicles: components["schemas"]["Vehicle"][] = [];
 
   // try {
   //   const client = await getAPIClient();
@@ -13,8 +13,14 @@ export default async function ExpensesPage() {
   //   if (vData?.items) vehicles = vData.items;
   // } catch (_) {}
 
-  if (!expensesData) {
-    expensesData = {
+  const passedExpensesData: components["schemas"]["PaginatedExpenses"] =
+    expensesData || {
+      meta: {
+        page: 1,
+        perPage: 30,
+        totalItems: 2,
+        totalPages: 1,
+      },
       items: [
         {
           id: "exp-1",
@@ -33,22 +39,27 @@ export default async function ExpensesPage() {
         },
       ],
     };
-  }
 
-  if (vehicles.length === 0) {
-    vehicles = [
-      {
-        id: "v-1",
-        registrationNumber: "TRK-402",
-        model: "Volvo Truck",
-        type: "Heavy",
-        capacityKg: 24000,
-        odometer: 100000,
-        acquisitionCost: 150000,
-        status: "AVAILABLE",
-      },
-    ];
-  }
+  const passedVehicles: components["schemas"]["Vehicle"][] =
+    vehicles.length > 0
+      ? vehicles
+      : [
+          {
+            id: "v-1",
+            registrationNumber: "TRK-402",
+            model: "Volvo Truck",
+            type: "Heavy",
+            capacityKg: 24000,
+            odometer: 100000,
+            acquisitionCost: 150000,
+            status: "AVAILABLE",
+          },
+        ];
 
-  return <ExpensesView initialExpenses={expensesData} vehicles={vehicles} />;
+  return (
+    <ExpensesView
+      initialExpenses={passedExpensesData}
+      vehicles={passedVehicles}
+    />
+  );
 }
