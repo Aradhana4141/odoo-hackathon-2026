@@ -80,15 +80,31 @@ export function MaintenanceView({
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label htmlFor="serviceType" className="text-xs uppercase">
+              <label
+                htmlFor="serviceType"
+                className="font-semibold text-on-surface-variant text-xs uppercase"
+              >
                 Service Type
               </label>
-              <input
-                name="serviceType"
-                required
-                className="glass-input rounded-xl p-3 text-sm"
-                placeholder="e.g. Brake Pad Replacement"
-              />
+              <div className="glass-input relative flex h-11 items-center rounded-xl">
+                <select
+                  name="serviceType"
+                  required
+                  className="w-full cursor-pointer appearance-none border-none bg-transparent px-3 py-2 text-on-surface text-sm outline-none focus:ring-0"
+                  defaultValue=""
+                >
+                  <option value="" disabled>
+                    Select service type...
+                  </option>
+                  <option value="Oil Change">Oil Change</option>
+                  <option value="Engine Repair">Engine Repair</option>
+                  <option value="Tyre Change">Tyre Change</option>
+                  <option value="Brake Service">Brake Service</option>
+                  <option value="Battery">Battery</option>
+                  <option value="General Service">General Service</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
             <div className="flex flex-col gap-1">
               <label htmlFor="expectedCost" className="text-xs uppercase">
