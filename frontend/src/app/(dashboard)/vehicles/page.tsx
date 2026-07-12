@@ -2,7 +2,7 @@ import type { components } from "@/../generated/openapi-schema";
 import { VehiclesView } from "./vehicles-view.client";
 
 export default async function VehiclesPage() {
-  let vehiclesData: components["schemas"]["PaginatedVehicles"] | null = null;
+  const vehiclesData: components["schemas"]["PaginatedVehicles"] | null = null;
 
   try {
     // const client = await getAPIClient();
@@ -12,9 +12,14 @@ export default async function VehiclesPage() {
     // }
   } catch (_) {}
 
-  // FALLBACK MOCK DATA
-  if (!vehiclesData) {
-    vehiclesData = {
+  const passedVehiclesData: components["schemas"]["PaginatedVehicles"] =
+    vehiclesData || {
+      meta: {
+        page: 1,
+        perPage: 30,
+        totalItems: 3,
+        totalPages: 1,
+      },
       items: [
         {
           id: "v-1",
@@ -48,7 +53,6 @@ export default async function VehiclesPage() {
         },
       ],
     };
-  }
 
-  return <VehiclesView initialData={vehiclesData} />;
+  return <VehiclesView initialData={passedVehiclesData} />;
 }

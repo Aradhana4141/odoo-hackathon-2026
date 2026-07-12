@@ -2,7 +2,7 @@ import type { components } from "@/../generated/openapi-schema";
 import { DriversView } from "./drivers-view.client";
 
 export default async function DriversPage() {
-  let driversData: components["schemas"]["PaginatedDrivers"] | null = null;
+  const driversData: components["schemas"]["PaginatedDrivers"] | null = null;
 
   // try {
   //   const client = await getAPIClient();
@@ -10,8 +10,14 @@ export default async function DriversPage() {
   //   if (data) driversData = data;
   // } catch (_) {}
 
-  if (!driversData) {
-    driversData = {
+  const passedDriversData: components["schemas"]["PaginatedDrivers"] =
+    driversData || {
+      meta: {
+        page: 1,
+        perPage: 30,
+        totalItems: 2,
+        totalPages: 1,
+      },
       items: [
         {
           id: "drv-9021",
@@ -35,7 +41,6 @@ export default async function DriversPage() {
         },
       ],
     };
-  }
 
-  return <DriversView initialDrivers={driversData} />;
+  return <DriversView initialDrivers={passedDriversData} />;
 }
