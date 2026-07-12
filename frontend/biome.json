@@ -38,6 +38,7 @@
       },
       "recommended": true,
       "correctness": {
+        "noUnreachable": "off",
         "noUnusedImports": {
           "level": "error",
           "fix": "safe"
