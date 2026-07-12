@@ -100,9 +100,10 @@ export function MaintenanceView({
                   id="serviceType"
                   name="serviceType"
                   required
+                  defaultValue=""
                   className="w-full cursor-pointer appearance-none border-none bg-transparent px-3 py-3 pl-10 text-on-surface text-sm focus:ring-0"
                 >
-                  <option value="" disabled selected>
+                  <option value="" disabled>
                     Select service type...
                   </option>
                   <option value="Routine Oil/Filter">Routine Oil/Filter</option>
@@ -148,9 +149,9 @@ export function MaintenanceView({
           </form>
         </div>
 
-        <div className="flex items-start gap-3 rounded-xl border border-secondary-container/30 bg-secondary-container/10 p-4 shadow-xs">
-          <Info className="mt-0.5 h-5 w-5 shrink-0 text-secondary" />
-          <p className="text-on-secondary-container text-xs leading-relaxed">
+        <div className="flex items-start gap-3 rounded-xl border border-secondary-container/30 bg-secondary-fixed-dim p-4 shadow-xs">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-on-secondary-fixed-variant" />
+          <p className="font-medium text-on-secondary-fixed text-xs leading-relaxed">
             Adding a vehicle to maintenance automatically changes its status to
             'In Shop'.
           </p>
@@ -229,7 +230,7 @@ export function MaintenanceView({
                       <span
                         className={`inline-flex items-center justify-center rounded-full border px-3 py-1 font-medium text-xs ${
                           log.status === "ACTIVE"
-                            ? "border-secondary-container/30 bg-secondary-container/20 text-on-secondary-container"
+                            ? "border-secondary-container/30 bg-secondary-fixed-dim text-on-secondary-fixed"
                             : "border-tertiary-container/20 bg-tertiary-container/10 text-tertiary"
                         }`}
                       >
