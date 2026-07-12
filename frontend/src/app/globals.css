@@ -52,27 +52,64 @@
 
 @layer utilities {
   .mesh-bg {
-    background-image:
+    background:
       radial-gradient(
         at 40% 20%,
-        hsla(245, 100%, 74%, 0.1) 0px,
+        hsla(245, 100%, 74%, 0.3) 0px,
         transparent 50%
       ),
       radial-gradient(
         at 80% 0%,
-        hsla(189, 100%, 56%, 0.1) 0px,
+        hsla(189, 100%, 56%, 0.3) 0px,
         transparent 50%
       ),
-      radial-gradient(at 0% 50%, hsla(245, 100%, 74%, 0.1) 0px, transparent 50%);
-    background-attachment: fixed;
+      radial-gradient(
+        at 0% 50%,
+        hsla(355, 100%, 93%, 0.3) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 80% 50%,
+        hsla(245, 100%, 74%, 0.3) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 0% 100%,
+        hsla(189, 100%, 56%, 0.3) 0px,
+        transparent 50%
+      ),
+      radial-gradient(
+        at 80% 100%,
+        hsla(245, 100%, 74%, 0.3) 0px,
+        transparent 50%
+      ),
+      radial-gradient(at 0% 0%, hsla(355, 100%, 93%, 0.3) 0px, transparent 50%);
+    background-color: var(--color-surface);
+    animation: pulse-mesh 15s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-mesh {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
   }
 
   .glass-panel {
-    @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-sm;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
   }
 
   .glass-input {
-    @apply bg-white/40 border border-white/40 shadow-inner focus:ring-2 focus:ring-secondary/50 focus:border-secondary outline-none transition-all duration-300;
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
   }
 }
 
