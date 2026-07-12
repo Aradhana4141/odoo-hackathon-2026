@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { getAPIClient } from "@/utils/client";
+import { getAPIClient, parseApiError } from "@/utils/client";
 
 export async function createVehicleAction(_prevState: any, formData: FormData) {
   try {
     const client = await getAPIClient();
-    await client.POST("/vehicles", {
+    const { error } = await client.POST("/vehicles", {
       body: {
         registrationNumber: formData.get("registrationNumber") as string,
         model: formData.get("model") as string,
@@ -17,6 +17,33 @@ export async function createVehicleAction(_prevState: any, formData: FormData) {
         acquisitionCost: Number(formData.get("acquisitionCost")),
       },
     });
+    if (error) return { error: parseApiError(error) };
+  } catch (e: any) {
+    return { error: e.message };
+  }
+
+  revalidatePath("/vehicles");
+  return { success: true };
+}
+
+export async function updateVehicleAction(_prevState: any, formData: FormData) {
+  const vehicleId = formData.get("vehicleId")?.toString();
+  if (!vehicleId) return { error: "Vehicle ID missing." };
+
+  try {
+    const client = await getAPIClient();
+    const { error } = await client.PUT("/vehicles/{id}", {
+      params: { path: { id: vehicleId } },
+      body: {
+        registrationNumber: formData.get("registrationNumber") as string,
+        model: formData.get("model") as string,
+        type: formData.get("type") as string,
+        capacityKg: Number(formData.get("capacityKg")),
+        odometer: Number(formData.get("odometer")),
+        acquisitionCost: Number(formData.get("acquisitionCost")),
+      },
+    });
+    if (error) return { error: parseApiError(error) };
   } catch (e: any) {
     return { error: e.message };
   }
@@ -28,9 +55,10 @@ export async function createVehicleAction(_prevState: any, formData: FormData) {
 export async function deleteVehicleAction(vehicleId: string) {
   try {
     const client = await getAPIClient();
-    await client.DELETE("/vehicles/{id}", {
+    const { error } = await client.DELETE("/vehicles/{id}", {
       params: { path: { id: vehicleId } },
     });
+    if (error) return { error: parseApiError(error) };
   } catch (e: any) {
     return { error: e.message };
   }
@@ -58,7 +86,10 @@ export async function uploadVehicleDocumentAction(
       body: formData, // contains file, documentType, expiryDate
     });
 
-    if (!res.ok) throw new Error("Failed to upload document");
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(errText || "Failed to upload document");
+    }
   } catch (e: any) {
     return { error: e.message };
   }
