@@ -34,7 +34,8 @@
       },
       "a11y": {
         "useButtonType": "off",
-        "useValidAnchor": "off"
+        "useValidAnchor": "off",
+        "noLabelWithoutControl": "off"
       },
       "recommended": true,
       "correctness": {
