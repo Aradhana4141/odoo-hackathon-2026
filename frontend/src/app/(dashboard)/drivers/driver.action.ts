@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getAPIClient } from "@/utils/client";
+import { getAPIClient, parseApiError } from "@/utils/client";
 
 export async function createDriverAction(_prevState: any, formData: FormData) {
   const name = formData.get("name")?.toString();
@@ -15,9 +15,44 @@ export async function createDriverAction(_prevState: any, formData: FormData) {
   }
   try {
     const client = await getAPIClient();
-    await client.POST("/drivers", {
+    const { error } = await client.POST("/drivers", {
       body: { name, licenseNumber, licenseCategory, expiryDate, contact },
     });
+    if (error) return { error: parseApiError(error) };
+  } catch (e: any) {
+    return { error: e.message };
+  }
+
+  revalidatePath("/drivers");
+  return { success: true };
+}
+
+export async function updateDriverAction(_prevState: any, formData: FormData) {
+  const driverId = formData.get("driverId")?.toString();
+  const name = formData.get("name")?.toString();
+  const licenseNumber = formData.get("licenseNumber")?.toString();
+  const licenseCategory = formData.get("licenseCategory")?.toString();
+  const expiryDate = formData.get("expiryDate")?.toString();
+  const contact = formData.get("contact")?.toString();
+
+  if (
+    !driverId ||
+    !name ||
+    !licenseNumber ||
+    !licenseCategory ||
+    !expiryDate ||
+    !contact
+  ) {
+    return { error: "Please enter all operator credentials." };
+  }
+
+  try {
+    const client = await getAPIClient();
+    const { error } = await client.PUT("/drivers/{id}", {
+      params: { path: { id: driverId } },
+      body: { name, licenseNumber, licenseCategory, expiryDate, contact },
+    });
+    if (error) return { error: parseApiError(error) };
   } catch (e: any) {
     return { error: e.message };
   }
@@ -43,9 +78,10 @@ export async function changeDriverStatusAction(
 export async function deleteDriverAction(driverId: string) {
   try {
     const client = await getAPIClient();
-    await client.DELETE("/drivers/{id}", {
+    const { error } = await client.DELETE("/drivers/{id}", {
       params: { path: { id: driverId } },
     });
+    if (error) return { error: parseApiError(error) };
   } catch (e: any) {
     return { error: e.message };
   }

@@ -5,6 +5,7 @@ import {
   BrainCircuit,
   Calendar,
   ChevronDown,
+  Edit2,
   Hash,
   MoreVertical,
   Phone,
@@ -20,6 +21,7 @@ import {
   checkDriverRiskAction,
   createDriverAction,
   deleteDriverAction,
+  updateDriverAction,
 } from "./driver.action";
 
 type DriversViewProps = {
@@ -28,18 +30,28 @@ type DriversViewProps = {
 
 export function DriversView({ initialDrivers }: DriversViewProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [state, formAction, isPending] = useActionState(
+  const [createState, createAction, isCreatePending] = useActionState(
     createDriverAction,
     null,
   );
 
+  const [editState, editAction, isEditPending] = useActionState(
+    updateDriverAction,
+    null,
+  );
+  const [editingDriver, setEditingDriver] = useState<
+    components["schemas"]["Driver"] | null
+  >(null);
+
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (state?.success) {
-      setIsOpen(false);
-    }
-  }, [state]);
+    if (createState?.success) setIsOpen(false);
+  }, [createState]);
+
+  useEffect(() => {
+    if (editState?.success) setEditingDriver(null);
+  }, [editState]);
 
   const handleStatusChange = async (
     id: string,
@@ -213,6 +225,17 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
                       <div className="absolute top-12 right-12 z-50 flex w-48 flex-col rounded-xl border border-outline-variant/20 bg-white py-2 text-left shadow-xl">
                         <button
                           type="button"
+                          onClick={() => {
+                            setEditingDriver(driver);
+                            setOpenMenuId(null);
+                          }}
+                          className="flex cursor-pointer items-center gap-2 px-4 py-2 text-left font-semibold text-xs transition-colors hover:bg-surface-container"
+                        >
+                          <Edit2 className="h-4 w-4" /> Edit Details
+                        </button>
+                        <div className="my-1 border-outline-variant/20 border-t" />
+                        <button
+                          type="button"
                           onClick={() =>
                             handleStatusChange(driver.id, "AVAILABLE")
                           }
@@ -263,17 +286,108 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
         </div>
       </div>
 
-      {/* Backdrop for side drawer */}
+      {/* Edit Driver Modal */}
+      {editingDriver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+          <div className="glass-panel w-full max-w-md rounded-3xl p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="font-bold text-lg">Edit Driver</h3>
+              <button
+                onClick={() => setEditingDriver(null)}
+                className="cursor-pointer text-outline hover:text-error"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <form action={editAction} className="flex flex-col gap-4">
+              {editState?.error && (
+                <div className="rounded bg-error-container p-2 text-error text-xs">
+                  {editState.error}
+                </div>
+              )}
+
+              <input type="hidden" name="driverId" value={editingDriver.id} />
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-semibold text-xs">Full Name</label>
+                <input
+                  name="name"
+                  type="text"
+                  required
+                  defaultValue={editingDriver.name}
+                  className="glass-input w-full rounded-xl p-3 text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-semibold text-xs">License No.</label>
+                  <input
+                    name="licenseNumber"
+                    type="text"
+                    required
+                    defaultValue={editingDriver.licenseNumber}
+                    className="glass-input w-full rounded-xl p-3 font-mono text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-semibold text-xs">Category</label>
+                  <select
+                    name="licenseCategory"
+                    required
+                    defaultValue={editingDriver.licenseCategory}
+                    className="glass-input w-full rounded-xl p-3 text-sm"
+                  >
+                    <option value="Class A">Class A (Heavy)</option>
+                    <option value="Class B">Class B (Medium)</option>
+                    <option value="Class C">Class C (Light)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-semibold text-xs">Expiry Date</label>
+                <input
+                  name="expiryDate"
+                  type="date"
+                  required
+                  defaultValue={editingDriver.expiryDate}
+                  className="glass-input w-full rounded-xl p-3 text-sm"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="font-semibold text-xs">Contact Number</label>
+                <input
+                  name="contact"
+                  type="tel"
+                  required
+                  defaultValue={editingDriver.contact}
+                  className="glass-input w-full rounded-xl p-3 text-sm"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isEditPending}
+                className="mt-4 cursor-pointer rounded-xl bg-primary py-3 font-bold text-white hover:bg-primary/90 disabled:opacity-50"
+              >
+                {isEditPending ? "Saving..." : "Update Driver"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Side Drawer: Register New Driver */}
       {isOpen && (
         <button
           type="button"
           aria-label="Close panel"
-          className="fixed inset-0 z-50 bg-black/20 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
-
-      {/* Side Drawer: Register New Driver */}
       <div
         className={`fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col border-white/40 border-l bg-white/80 shadow-2xl backdrop-blur-2xl transition-transform duration-400 ease-out md:w-120 ${
           isOpen ? "translate-x-0" : "translate-x-full"
@@ -298,12 +412,12 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
         </div>
 
         <form
-          action={formAction}
+          action={createAction}
           className="grow space-y-4 overflow-y-auto p-6"
         >
-          {state?.error && (
+          {createState?.error && (
             <div className="rounded-lg border border-error/20 bg-error-container p-3 font-medium text-error text-xs">
-              {state.error}
+              {createState.error}
             </div>
           )}
 
@@ -424,10 +538,10 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
             </button>
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isCreatePending}
               className="cursor-pointer rounded-full bg-primary px-6 py-2.5 font-semibold text-white text-xs shadow-md transition-colors hover:bg-primary-container disabled:opacity-50"
             >
-              {isPending ? "Registering..." : "Save Operator"}
+              {isCreatePending ? "Registering..." : "Save Operator"}
             </button>
           </div>
         </form>
