@@ -3,9 +3,11 @@
 import {
   ChevronDown,
   DollarSign,
+  FileText,
   Fuel,
   Plus,
-  UploadCloud,
+  Settings,
+  Ticket,
   X,
 } from "lucide-react";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -24,7 +26,9 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
     null,
   );
   const actionState = state as { error?: string; success?: boolean } | null;
-  const [expenseType, setExpenseType] = useState<"FUEL" | "OTHER">("FUEL");
+  const [expenseType, setExpenseType] = useState<
+    "FUEL" | "TOLL" | "MAINTENANCE" | "OTHER"
+  >("FUEL");
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -90,6 +94,9 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                   Expense Type
                 </th>
                 <th className="px-4 py-3 font-semibold text-on-surface-variant text-xs uppercase tracking-wider">
+                  Trip Ref
+                </th>
+                <th className="px-4 py-3 font-semibold text-on-surface-variant text-xs uppercase tracking-wider">
                   Liters
                 </th>
                 <th className="px-4 py-3 font-semibold text-on-surface-variant text-xs uppercase tracking-wider">
@@ -108,20 +115,37 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                 >
                   <td className="flex items-center gap-3 px-4 py-4 font-medium font-sans">
                     <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
-                      <Fuel className="h-4.5 w-4.5" />
+                      {item.type === "FUEL" ? (
+                        <Fuel className="h-4 w-4" />
+                      ) : item.type === "TOLL" ? (
+                        <Ticket className="h-4 w-4" />
+                      ) : item.type === "MAINTENANCE" ? (
+                        <Settings className="h-4 w-4" />
+                      ) : (
+                        <FileText className="h-4 w-4" />
+                      )}
                     </div>
                     {item.vehicleId.substring(0, 8).toUpperCase()}
                   </td>
                   <td className="px-4 py-4 font-sans">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-medium text-xs ${
+                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 font-medium text-[10px] uppercase ${
                         item.type === "FUEL"
                           ? "border-secondary-container/20 bg-secondary-fixed text-on-secondary-fixed"
-                          : "border-error-container bg-error-container/20 text-error"
+                          : item.type === "TOLL"
+                            ? "border-tertiary/20 bg-tertiary-fixed text-on-tertiary-fixed"
+                            : item.type === "MAINTENANCE"
+                              ? "border-error-container bg-error-container/20 text-error"
+                              : "border-outline/20 bg-surface-variant text-on-surface-variant"
                       }`}
                     >
                       {item.type}
                     </span>
+                  </td>
+                  <td className="px-4 py-4 text-outline text-xs">
+                    {item.tripId
+                      ? item.tripId.substring(0, 8).toUpperCase()
+                      : "-"}
                   </td>
                   <td className="px-4 py-4">
                     {item.liters ? `${item.liters} L` : "-"}
@@ -172,66 +196,47 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
           )}
 
           <div>
-            <label
-              htmlFor="exp-type-fuel"
-              className="mb-2 block font-semibold text-on-surface-variant text-xs"
-            >
+            <label className="mb-2 block font-semibold text-on-surface-variant text-xs">
               Expense Type
             </label>
             <div className="grid grid-cols-2 gap-3">
-              <label htmlFor="exp-type-fuel" className="cursor-pointer">
-                <input
-                  id="exp-type-fuel"
-                  checked={expenseType === "FUEL"}
-                  onChange={() => setExpenseType("FUEL")}
-                  className="peer sr-only"
-                  name="type"
-                  value="FUEL"
-                  type="radio"
-                />
-                <div className="glass-panel flex items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/5 p-3 transition-all peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white">
-                  <Fuel className="h-5 w-5" />
-                  <span className="font-semibold text-xs">Fuel</span>
-                </div>
-              </label>
-              <label htmlFor="exp-type-other" className="cursor-pointer">
-                <input
-                  id="exp-type-other"
-                  checked={expenseType === "OTHER"}
-                  onChange={() => setExpenseType("OTHER")}
-                  className="peer sr-only"
-                  name="type"
-                  value="OTHER"
-                  type="radio"
-                />
-                <div className="glass-panel flex items-center justify-center gap-2 rounded-xl border border-outline-variant/30 p-3 text-on-surface transition-all hover:bg-white/80 hover:text-primary peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white">
-                  <X className="h-5 w-5" />
-                  <span className="font-semibold text-xs">Other</span>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="receipt-upload"
-              className="mb-2 block font-semibold text-on-surface-variant text-xs"
-            >
-              Receipt Upload
-            </label>
-            <div className="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-outline-variant/50 border-dashed bg-surface-container/30 p-8 transition-colors hover:bg-surface-container/60">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                <UploadCloud className="h-6 w-6" />
-              </div>
-              <div className="text-center">
-                <span className="font-semibold text-primary text-xs hover:underline">
-                  Click to upload
-                </span>
-                <span className="text-on-surface-variant text-xs">
-                  {" "}
-                  or drag and drop
-                </span>
-              </div>
+              {[
+                {
+                  id: "FUEL",
+                  icon: <Fuel className="h-4 w-4" />,
+                  label: "Fuel",
+                },
+                {
+                  id: "TOLL",
+                  icon: <Ticket className="h-4 w-4" />,
+                  label: "Toll",
+                },
+                {
+                  id: "MAINTENANCE",
+                  icon: <Settings className="h-4 w-4" />,
+                  label: "Maintenance",
+                },
+                {
+                  id: "OTHER",
+                  icon: <FileText className="h-4 w-4" />,
+                  label: "Other",
+                },
+              ].map((opt) => (
+                <label key={opt.id} className="cursor-pointer">
+                  <input
+                    checked={expenseType === opt.id}
+                    onChange={() => setExpenseType(opt.id as any)}
+                    className="peer sr-only"
+                    name="type"
+                    value={opt.id}
+                    type="radio"
+                  />
+                  <div className="glass-panel flex items-center justify-center gap-2 rounded-xl border border-outline-variant/30 p-2.5 text-on-surface transition-all hover:bg-white/80 peer-checked:border-primary peer-checked:bg-primary peer-checked:text-white">
+                    {opt.icon}
+                    <span className="font-semibold text-xs">{opt.label}</span>
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -241,7 +246,7 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                 className="mb-1 block font-semibold text-on-surface-variant text-xs"
                 htmlFor="vehicleId"
               >
-                Vehicle
+                Vehicle *
               </label>
               <div className="glass-input relative h-11 rounded-xl">
                 <select
@@ -264,13 +269,29 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
               </div>
             </div>
 
+            <div>
+              <label
+                className="mb-1 block font-semibold text-on-surface-variant text-xs"
+                htmlFor="tripId"
+              >
+                Trip ID (Optional)
+              </label>
+              <input
+                id="tripId"
+                name="tripId"
+                type="text"
+                placeholder="e.g. TRP-1234..."
+                className="glass-input h-11 w-full rounded-xl px-4 font-mono text-sm"
+              />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label
                   className="mb-1 block font-semibold text-on-surface-variant text-xs"
                   htmlFor="amount"
                 >
-                  Amount ($)
+                  Amount ($) *
                 </label>
                 <div className="glass-input relative flex h-11 items-center rounded-xl px-3">
                   <DollarSign className="mr-2 h-4 w-4 text-outline" />
@@ -279,7 +300,8 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                     name="amount"
                     required
                     type="number"
-                    placeholder="0"
+                    step="0.01"
+                    placeholder="0.00"
                     className="w-full border-none bg-transparent p-0 font-mono text-sm focus:ring-0"
                   />
                 </div>
@@ -298,6 +320,7 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                     name="liters"
                     required
                     type="number"
+                    step="0.1"
                     placeholder="0"
                     className="glass-input h-11 w-full rounded-xl px-4 font-mono text-sm"
                   />
@@ -310,7 +333,7 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                 className="mb-1 block font-semibold text-on-surface-variant text-xs"
                 htmlFor="date"
               >
-                Date & Time
+                Date *
               </label>
               <input
                 id="date"
@@ -320,9 +343,25 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                 className="glass-input h-11 w-full rounded-xl px-4 text-sm"
               />
             </div>
+
+            <div>
+              <label
+                className="mb-1 block font-semibold text-on-surface-variant text-xs"
+                htmlFor="notes"
+              >
+                Notes (Optional)
+              </label>
+              <textarea
+                id="notes"
+                name="notes"
+                rows={2}
+                placeholder="Additional context..."
+                className="glass-input w-full rounded-xl p-3 text-sm"
+              />
+            </div>
           </div>
 
-          <div className="mt-auto flex gap-4 border-outline-variant/20 border-t bg-white/80 p-6">
+          <div className="mt-auto flex gap-4 border-outline-variant/20 border-t bg-white/80 pt-6">
             <button
               type="button"
               className="grow cursor-pointer rounded-full border border-outline-variant py-3 font-semibold text-on-surface text-xs transition-colors hover:bg-surface-variant/30"
