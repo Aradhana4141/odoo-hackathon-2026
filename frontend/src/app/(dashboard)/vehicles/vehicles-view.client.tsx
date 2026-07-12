@@ -255,7 +255,7 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
                     </div>
                     <div className="flex items-center gap-2">
                       <a
-                        href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/files/Documents/${doc.id}/${doc.file}`}
+                        href={`${process.env.NEXT_PUBLIC_PB_URL}/api/files/Documents/${doc.id}/${doc.file}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-xs font-semibold text-primary hover:underline"
@@ -333,11 +333,10 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
                   defaultValue={editingVehicle.type}
                   className="glass-input w-full rounded-xl p-3 text-sm"
                 >
-                  <option value="Heavy Duty Truck">Heavy Duty Truck</option>
-                  <option value="Medium Duty Box">Medium Duty Box</option>
-                  <option value="Light Commercial Van">
-                    Light Commercial Van
-                  </option>
+                  <option value="Truck">Truck</option>
+                  <option value="Mini Truck">Mini Truck</option>
+                  <option value="Van">Van</option>
+                  <option value="Pickup">Pickup</option>
                 </select>
               </div>
 
@@ -551,11 +550,12 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
               name="type"
               required
               className="glass-input w-full cursor-pointer appearance-none rounded-xl p-3 text-sm"
-              defaultValue="Heavy Duty Truck"
+              defaultValue="Truck"
             >
-              <option value="Heavy Duty Truck">Heavy Duty Truck</option>
-              <option value="Medium Duty Box">Medium Duty Box</option>
-              <option value="Light Commercial Van">Light Commercial Van</option>
+              <option value="Truck">Truck</option>
+              <option value="Mini Truck">Mini Truck</option>
+              <option value="Van">Van</option>
+              <option value="Pickup">Pickup</option>
             </select>
           </div>
 

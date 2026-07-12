@@ -52,7 +52,10 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to remove this vehicle?")) {
-      await deleteVehicleAction(id);
+      const result = await deleteVehicleAction(id);
+      if (result?.error) {
+        alert(`Deletion failed: ${result.error}`);
+      }
     }
     setOpenMenuId(null);
   };

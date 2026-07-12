@@ -74,6 +74,11 @@ export async function uploadVehicleDocumentAction(
   const vehicleId = formData.get("vehicleId")?.toString();
   if (!vehicleId) return { error: "Vehicle ID missing." };
 
+  const expiryDate = formData.get("expiryDate")?.toString();
+  if (!expiryDate || expiryDate.trim() === "") {
+    formData.delete("expiryDate");
+  }
+
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
