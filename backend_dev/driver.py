@@ -16,4 +16,6 @@ class DriverUpdate(BaseModel):
     phone: Optional[str] = None
     licenseNumber: Optional[str] = None
     licenseExpiry: Optional[date] = None
-    status: Optional[str] = None
+    status: Optional[str] = None 
+
+    
