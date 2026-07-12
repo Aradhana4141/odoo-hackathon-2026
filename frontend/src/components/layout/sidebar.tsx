@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Fuel,
   IdCard,
@@ -8,9 +10,23 @@ import {
   Truck,
   Wrench,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Sidebar() {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: "/", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
+    { href: "/vehicles", icon: <Truck size={20} />, label: "Fleet" },
+    { href: "/drivers", icon: <IdCard size={20} />, label: "Drivers" },
+    { href: "/trips", icon: <Route size={20} />, label: "Trips" },
+    { href: "/maintenance", icon: <Wrench size={20} />, label: "Maintenance" },
+    { href: "/expenses", icon: <Fuel size={20} />, label: "Fuel & Expenses" },
+    { href: "/analytics", icon: <LineChart size={20} />, label: "Analytics" },
+  ];
+
   return (
     <nav className="glass-panel fixed top-4 bottom-4 left-4 z-40 hidden w-64 flex-col gap-6 rounded-xl p-6 md:flex">
       <div className="mb-2 flex items-center gap-3 px-2">
@@ -26,39 +42,23 @@ export function Sidebar() {
           </p>
         </div>
       </div>
-
       <div className="flex flex-1 flex-col gap-2">
-        <NavItem
-          href="/"
-          icon={<LayoutDashboard size={20} />}
-          label="Dashboard"
-          active
-        />
-        <NavItem href="/vehicles" icon={<Truck size={20} />} label="Fleet" />
-        <NavItem href="/drivers" icon={<IdCard size={20} />} label="Drivers" />
-        <NavItem href="/trips" icon={<Route size={20} />} label="Trips" />
-        <NavItem
-          href="/maintenance"
-          icon={<Wrench size={20} />}
-          label="Maintenance"
-        />
-        <NavItem
-          href="/expenses"
-          icon={<Fuel size={20} />}
-          label="Fuel & Expenses"
-        />
-        <NavItem
-          href="/analytics"
-          icon={<LineChart size={20} />}
-          label="Analytics"
-        />
+        {navItems.map((item) => (
+          <NavItem
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            active={pathname === item.href}
+          />
+        ))}
       </div>
-
       <div className="mt-auto">
         <NavItem
           href="/settings"
           icon={<Settings size={20} />}
           label="Settings"
+          active={pathname === "/settings"}
         />
       </div>
     </nav>
@@ -79,14 +79,23 @@ function NavItem({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-4 rounded-full px-4 py-3 text-sm transition-all duration-300 active:scale-95 ${
+      className={`relative flex items-center gap-4 rounded-full px-4 py-3 text-sm transition-colors duration-300 active:scale-95 ${
         active
-          ? "bg-primary text-white shadow-md shadow-primary/20"
+          ? "text-white"
           : "text-on-surface-variant hover:bg-white/40 hover:text-primary"
       }`}
     >
-      {icon}
-      <span className="font-medium">{label}</span>
+      {active && (
+        <motion.div
+          layoutId="active-nav-pill"
+          className="absolute inset-0 rounded-full bg-primary shadow-md shadow-primary/20"
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+        />
+      )}
+      <span className="relative z-10 flex items-center gap-4">
+        {icon}
+        <span className="font-medium">{label}</span>
+      </span>
     </Link>
   );
 }
