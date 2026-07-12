@@ -4,6 +4,42 @@
  */
 
 export interface paths {
+    "/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Current User */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Current user details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UserSummary"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/dashboard/general": {
         parameters: {
             query?: never;
@@ -11,11 +47,29 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get General Dashboard (KPIs)
-         * @description Returns fully assembled KPI data for the main dashboard including active vehicles, fleet utilization, and quick status counts.
-         */
-        get: operations["getGeneralDashboard"];
+        /** Get General Dashboard (KPIs) */
+        get: {
+            parameters: {
+                query?: {
+                    region?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Dashboard data */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DashboardGeneral"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -31,11 +85,27 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get Dispatcher Live Board
-         * @description Returns grouped lists of trips (Draft, Dispatched, Completed) and a quick list of available vehicles and drivers for the dispatcher view.
-         */
-        get: operations["getDispatcherDashboard"];
+        /** Get Dispatcher Live Board */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Dispatcher board data */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DashboardDispatcher"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -51,17 +121,58 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Vehicles
-         * @description Paginated and searchable listing of vehicles for the Vehicle Registry.
-         */
-        get: operations["listVehicles"];
+        /** List Vehicles */
+        get: {
+            parameters: {
+                query?: {
+                    page?: components["parameters"]["Page"];
+                    perPage?: components["parameters"]["PerPage"];
+                    sort?: components["parameters"]["Sort"];
+                    filter?: components["parameters"]["Filter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Paginated vehicles */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaginatedVehicles"];
+                    };
+                };
+            };
+        };
         put?: never;
-        /**
-         * Register Vehicle
-         * @description Add a new vehicle to the registry. Default status is AVAILABLE.
-         */
-        post: operations["createVehicle"];
+        /** Register Vehicle */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VehicleMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Vehicle created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Vehicle"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -76,11 +187,224 @@ export interface paths {
             cookie?: never;
         };
         /** Get Vehicle */
-        get: operations["getVehicle"];
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Vehicle details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Vehicle"];
+                    };
+                };
+            };
+        };
         /** Update Vehicle */
-        put: operations["updateVehicle"];
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VehicleMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Vehicle updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Vehicle"];
+                    };
+                };
+            };
+        };
         post?: never;
+        /** Delete Vehicle */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Vehicle deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/{vehicle_id}/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Vehicle Image */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    vehicle_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        image?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Image uploaded */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/vehicles/{vehicle_id}/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Vehicle Documents */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    vehicle_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of documents */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": Record<string, never>[];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Upload Vehicle Document */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    vehicle_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        file: string;
+                        documentType: string;
+                        /** Format: date */
+                        expiryDate?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Document uploaded */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Document */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    document_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Document deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -93,14 +417,58 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Drivers
-         * @description Paginated list of drivers for Driver Management.
-         */
-        get: operations["listDrivers"];
+        /** List Drivers */
+        get: {
+            parameters: {
+                query?: {
+                    page?: components["parameters"]["Page"];
+                    perPage?: components["parameters"]["PerPage"];
+                    sort?: components["parameters"]["Sort"];
+                    filter?: components["parameters"]["Filter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Paginated drivers */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaginatedDrivers"];
+                    };
+                };
+            };
+        };
         put?: never;
         /** Register Driver */
-        post: operations["createDriver"];
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["DriverMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Driver registered */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Driver"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -115,11 +483,77 @@ export interface paths {
             cookie?: never;
         };
         /** Get Driver */
-        get: operations["getDriver"];
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Driver details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Driver"];
+                    };
+                };
+            };
+        };
         /** Update Driver */
-        put: operations["updateDriver"];
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["DriverMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Driver updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Driver"];
+                    };
+                };
+            };
+        };
         post?: never;
-        delete?: never;
+        /** Delete Driver */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Driver deleted */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -138,11 +572,35 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /**
-         * Toggle Driver Status
-         * @description Allows Safety Officer or Manager to manually suspend or mark a driver off-duty.
-         */
-        patch: operations["changeDriverStatus"];
+        /** Toggle Driver Status */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        status: components["schemas"]["DriverStatus"];
+                    };
+                };
+            };
+            responses: {
+                /** @description Status updated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Driver"];
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/trips": {
@@ -153,13 +611,57 @@ export interface paths {
             cookie?: never;
         };
         /** List Trips */
-        get: operations["listTrips"];
+        get: {
+            parameters: {
+                query?: {
+                    page?: components["parameters"]["Page"];
+                    perPage?: components["parameters"]["PerPage"];
+                    sort?: components["parameters"]["Sort"];
+                    filter?: components["parameters"]["Filter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Paginated trips */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaginatedTrips"];
+                    };
+                };
+            };
+        };
         put?: never;
-        /**
-         * Create Trip (Draft)
-         * @description Creates a draft trip. Validates that Cargo Weight <= Vehicle Capacity.
-         */
-        post: operations["createTrip"];
+        /** Create Trip (Draft) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["TripMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Trip created as Draft */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TripDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -174,7 +676,28 @@ export interface paths {
             cookie?: never;
         };
         /** Get Trip Details */
-        get: operations["getTrip"];
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Trip Details */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TripDetails"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -192,11 +715,29 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Dispatch Trip
-         * @description Changes Trip to DISPATCHED. Automatically changes Vehicle and Driver status to ON_TRIP. Validates driver license is valid and both are AVAILABLE.
-         */
-        post: operations["dispatchTrip"];
+        /** Dispatch Trip */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Trip Dispatched */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TripDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -212,11 +753,33 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Complete Trip
-         * @description Marks Trip COMPLETED. Restores Vehicle and Driver to AVAILABLE. Creates an automatic Fuel & Expense log. Updates Vehicle Odometer.
-         */
-        post: operations["completeTrip"];
+        /** Complete Trip */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CompleteTripRequest"];
+                };
+            };
+            responses: {
+                /** @description Trip Completed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TripDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -232,11 +795,29 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Cancel Trip
-         * @description Cancels a trip. If it was dispatched, restores Vehicle and Driver to AVAILABLE.
-         */
-        post: operations["cancelTrip"];
+        /** Cancel Trip */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Trip Cancelled */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TripDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -251,13 +832,57 @@ export interface paths {
             cookie?: never;
         };
         /** List Maintenance Logs */
-        get: operations["listMaintenance"];
+        get: {
+            parameters: {
+                query?: {
+                    page?: components["parameters"]["Page"];
+                    perPage?: components["parameters"]["PerPage"];
+                    sort?: components["parameters"]["Sort"];
+                    filter?: components["parameters"]["Filter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Paginated maintenance records */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaginatedMaintenanceLogs"];
+                    };
+                };
+            };
+        };
         put?: never;
-        /**
-         * Create Maintenance Record
-         * @description Starts a maintenance record. Automatically changes the vehicle status to IN_SHOP.
-         */
-        post: operations["startMaintenance"];
+        /** Create Maintenance Record */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["MaintenanceMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Maintenance started */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MaintenanceLog"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -273,11 +898,33 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /**
-         * Complete Maintenance
-         * @description Closes the maintenance record, updates total operational cost, and restores vehicle to AVAILABLE.
-         */
-        post: operations["completeMaintenance"];
+        /** Complete Maintenance */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: components["parameters"]["PathId"];
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CompleteMaintenanceRequest"];
+                };
+            };
+            responses: {
+                /** @description Maintenance completed */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MaintenanceLog"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -291,17 +938,58 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Expenses
-         * @description View fuel logs, tolls, and maintenance costs.
-         */
-        get: operations["listExpenses"];
+        /** List Expenses */
+        get: {
+            parameters: {
+                query?: {
+                    page?: components["parameters"]["Page"];
+                    perPage?: components["parameters"]["PerPage"];
+                    sort?: components["parameters"]["Sort"];
+                    filter?: components["parameters"]["Filter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Paginated expenses */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PaginatedExpenses"];
+                    };
+                };
+            };
+        };
         put?: never;
-        /**
-         * Add Misc Expense
-         * @description Manually log an expense (e.g., ad-hoc fuel, tolls).
-         */
-        post: operations["createExpense"];
+        /** Add Misc Expense */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ExpenseMutateRequest"];
+                };
+            };
+            responses: {
+                /** @description Expense added */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Expense"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -315,11 +1003,284 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get Fleet Analytics
-         * @description Returns fully assembled chart data and KPIs for the Financial Analyst (Fuel Efficiency, Fleet Utilization, Operational Costs, Vehicle ROI).
-         */
-        get: operations["getAnalytics"];
+        /** Get Fleet Analytics */
+        get: {
+            parameters: {
+                query?: {
+                    month?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Analytics and Chart Data */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AnalyticsResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ai/fleet-readiness/{vehicle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get AI Fleet Readiness Score */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    vehicle_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Readiness Score payload */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AIFleetReadiness"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ai/driver-risk/{driver_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get AI Driver Risk Score */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    driver_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Risk Score payload */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AIDriverRisk"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fleet-locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Fleet Locations */
+        get: {
+            parameters: {
+                query?: {
+                    activeOnly?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description List of fleet positions */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FleetLocationResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Publish Location */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["FleetLocationIn"];
+                };
+            };
+            responses: {
+                /** @description Position recorded */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FleetLocation"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fleet-locations/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Simulate Fleet Locations */
+        post: {
+            parameters: {
+                query?: {
+                    vehicleId?: string;
+                    latitude?: number;
+                    longitude?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Simulated positions generated */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            generated?: number;
+                            items?: components["schemas"]["FleetLocation"][];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fleet-locations/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** SSE Stream for GPS */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Text Event Stream */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/event-stream": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/fleet-locations/{vehicle_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Specific Vehicle Location */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    vehicle_id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Vehicle GPS Position */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FleetLocation"];
+                    };
+                };
+            };
+        };
         put?: never;
         post?: never;
         delete?: never;
@@ -333,22 +1294,14 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         PaginationMeta: {
-            page: number;
-            perPage: number;
-            totalItems: number;
-            totalPages: number;
-        };
-        ErrorResponse: {
-            /** @default true */
-            error: boolean;
-            message: string;
-            details?: {
-                [key: string]: unknown;
-            };
+            page?: number;
+            perPage?: number;
+            totalItems?: number;
+            totalPages?: number;
         };
         ChartData: {
-            label: string;
-            value: number;
+            label?: string;
+            value?: number;
         };
         /** @enum {string} */
         VehicleStatus: "AVAILABLE" | "ON_TRIP" | "IN_SHOP" | "RETIRED";
@@ -359,22 +1312,22 @@ export interface components {
         /** @enum {string} */
         ExpenseType: "FUEL" | "TOLL" | "MAINTENANCE" | "OTHER";
         UserSummary: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            /** @enum {string} */
-            role: "FLEET_MANAGER" | "DRIVER" | "SAFETY_OFFICER" | "FINANCIAL_ANALYST";
+            id?: string;
+            email?: string;
+            name?: string;
+            role?: string;
+            phone?: string;
+            isActive?: boolean;
         };
         Vehicle: {
-            /** Format: uuid */
-            id: string;
-            registrationNumber: string;
-            model: string;
-            type: string;
-            capacityKg: number;
-            odometer: number;
-            acquisitionCost: number;
-            status: components["schemas"]["VehicleStatus"];
+            id?: string;
+            registrationNumber?: string;
+            model?: string;
+            type?: string;
+            capacityKg?: number;
+            odometer?: number;
+            acquisitionCost?: number;
+            status?: components["schemas"]["VehicleStatus"];
         };
         VehicleMutateRequest: {
             registrationNumber: string;
@@ -386,17 +1339,15 @@ export interface components {
             acquisitionCost: number;
         };
         Driver: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            licenseNumber: string;
-            licenseCategory: string;
+            id?: string;
+            name?: string;
+            licenseNumber?: string;
+            licenseCategory?: string;
             /** Format: date */
-            expiryDate: string;
-            contact: string;
-            /** @description Scale 0-100 */
-            safetyScore: number;
-            status: components["schemas"]["DriverStatus"];
+            expiryDate?: string;
+            contact?: string;
+            safetyScore?: number;
+            status?: components["schemas"]["DriverStatus"];
         };
         DriverMutateRequest: {
             name: string;
@@ -407,15 +1358,14 @@ export interface components {
             contact: string;
         };
         TripDetails: {
-            /** Format: uuid */
-            id: string;
-            source: string;
-            destination: string;
-            vehicle: components["schemas"]["Vehicle"];
-            driver: components["schemas"]["Driver"];
-            cargoWeight: number;
-            plannedDistance: number;
-            status: components["schemas"]["TripStatus"];
+            id?: string;
+            source?: string;
+            destination?: string;
+            vehicle?: components["schemas"]["Vehicle"];
+            driver?: components["schemas"]["Driver"];
+            cargoWeight?: number;
+            plannedDistance?: number;
+            status?: components["schemas"]["TripStatus"];
             /** Format: date-time */
             dispatchTime?: string;
             /** Format: date-time */
@@ -425,51 +1375,52 @@ export interface components {
         TripMutateRequest: {
             source: string;
             destination: string;
-            /** Format: uuid */
             vehicleId: string;
-            /** Format: uuid */
             driverId: string;
             cargoWeight: number;
             plannedDistance: number;
         };
+        CompleteTripRequest: {
+            finalOdometer: number;
+            fuelConsumed: number;
+            fuelCost: number;
+            /** @default 0 */
+            tollExpenses: number;
+        };
         MaintenanceLog: {
-            /** Format: uuid */
-            id: string;
-            vehicle: components["schemas"]["Vehicle"];
-            serviceType: string;
-            cost: number;
+            id?: string;
+            vehicle?: components["schemas"]["Vehicle"];
+            serviceType?: string;
+            cost?: number;
             /** Format: date */
-            date: string;
+            date?: string;
             /** @enum {string} */
-            status: "ACTIVE" | "COMPLETED";
+            status?: "ACTIVE" | "COMPLETED";
         };
         MaintenanceMutateRequest: {
-            /** Format: uuid */
             vehicleId: string;
             serviceType: string;
             expectedCost: number;
             /** Format: date */
             date?: string;
         };
+        CompleteMaintenanceRequest: {
+            finalCost: number;
+            notes?: string;
+        };
         Expense: {
-            /** Format: uuid */
-            id: string;
-            /** Format: uuid */
-            vehicleId: string;
-            /** Format: uuid */
+            id?: string;
+            vehicleId?: string;
             tripId?: string;
-            type: components["schemas"]["ExpenseType"];
-            amount: number;
-            /** @description Only applicable if type is FUEL */
+            type?: components["schemas"]["ExpenseType"];
+            amount?: number;
             liters?: number;
             /** Format: date */
-            date: string;
+            date?: string;
             notes?: string;
         };
         ExpenseMutateRequest: {
-            /** Format: uuid */
             vehicleId: string;
-            /** Format: uuid */
             tripId?: string;
             type: components["schemas"]["ExpenseType"];
             amount: number;
@@ -499,7 +1450,7 @@ export interface components {
             items?: components["schemas"]["Expense"][];
         };
         DashboardGeneral: {
-            kpis: {
+            kpis?: {
                 activeVehicles?: number;
                 availableVehicles?: number;
                 vehiclesInMaintenance?: number;
@@ -508,645 +1459,92 @@ export interface components {
                 driversOnDuty?: number;
                 fleetUtilizationPercent?: number;
             };
-            vehicleStatusChart: components["schemas"]["ChartData"][];
-            recentTrips: components["schemas"]["TripDetails"][];
+            vehicleStatusChart?: components["schemas"]["ChartData"][];
+            recentTrips?: components["schemas"]["TripDetails"][];
         };
         DashboardDispatcher: {
-            draftedTrips: components["schemas"]["TripDetails"][];
-            activeTrips: components["schemas"]["TripDetails"][];
-            completedTrips: components["schemas"]["TripDetails"][];
-            availableVehicles: components["schemas"]["Vehicle"][];
-            availableDrivers: components["schemas"]["Driver"][];
+            draftedTrips?: components["schemas"]["TripDetails"][];
+            activeTrips?: components["schemas"]["TripDetails"][];
+            completedTrips?: components["schemas"]["TripDetails"][];
+            availableVehicles?: components["schemas"]["Vehicle"][];
+            availableDrivers?: components["schemas"]["Driver"][];
         };
         AnalyticsResponse: {
-            kpis: {
-                /** @description km/l */
+            kpis?: {
                 fuelEfficiencyAvg?: number;
-                /** @description % */
                 fleetUtilization?: number;
                 totalOperationalCost?: number;
                 totalRevenue?: number;
             };
-            monthlyRevenueChart: components["schemas"]["ChartData"][];
-            costliestVehiclesChart: components["schemas"]["ChartData"][];
-            /** @description [Revenue - (Maintenance + Fuel)] / Acquisition Cost per vehicle */
-            vehicleROI: {
+            monthlyRevenueChart?: components["schemas"]["ChartData"][];
+            costliestVehiclesChart?: components["schemas"]["ChartData"][];
+            vehicleROI?: {
                 vehicle?: components["schemas"]["Vehicle"];
                 roiPercent?: number;
             }[];
         };
+        AIFleetReadiness: {
+            vehicleId?: string;
+            safeToDispatch?: boolean;
+            readinessScore?: number;
+            /** @enum {string} */
+            riskLevel?: "LOW" | "MEDIUM" | "HIGH";
+            reasons?: string[];
+            model?: string;
+            extensionPoint?: string;
+        };
+        AIDriverRisk: {
+            driverId?: string;
+            riskScore?: number;
+            licenseDaysRemaining?: number;
+            incidentCount?: number;
+            model?: string;
+        };
+        FleetLocationIn: {
+            vehicleId: string;
+            latitude: number;
+            longitude: number;
+            speedKph?: number;
+            heading?: number;
+            accuracyMeters?: number;
+            /** Format: date-time */
+            recordedAt?: string;
+        };
+        FleetLocation: {
+            vehicleId?: string;
+            registrationNumber?: string;
+            model?: string;
+            status?: string;
+            latitude?: number;
+            longitude?: number;
+            speedKph?: number;
+            heading?: number;
+            accuracyMeters?: number;
+            /** Format: date-time */
+            recordedAt?: string;
+            /** Format: date-time */
+            receivedAt?: string;
+            reportedBy?: string;
+            ageSeconds?: number;
+            isStale?: boolean;
+        };
+        FleetLocationResponse: {
+            refreshAfterSeconds?: number;
+            count?: number;
+            items?: components["schemas"]["FleetLocation"][];
+        };
     };
-    responses: {
-        /** @description Bad Request (e.g. Validation Error like Cargo Weight > Capacity) */
-        BadRequest: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description Unauthorized */
-        Unauthorized: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-        /** @description Resource Not Found */
-        NotFound: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-    };
+    responses: never;
     parameters: {
         PathId: string;
         Page: number;
         PerPage: number;
         Sort: string;
         Filter: string;
-        RegionFilter: string;
     };
     requestBodies: never;
     headers: never;
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export interface operations {
-    getGeneralDashboard: {
-        parameters: {
-            query?: {
-                region?: components["parameters"]["RegionFilter"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Dashboard data */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DashboardGeneral"];
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-        };
-    };
-    getDispatcherDashboard: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Dispatcher board data */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DashboardDispatcher"];
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-        };
-    };
-    listVehicles: {
-        parameters: {
-            query?: {
-                page?: components["parameters"]["Page"];
-                perPage?: components["parameters"]["PerPage"];
-                sort?: components["parameters"]["Sort"];
-                filter?: components["parameters"]["Filter"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Paginated vehicles */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedVehicles"];
-                };
-            };
-        };
-    };
-    createVehicle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VehicleMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Vehicle created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vehicle"];
-                };
-            };
-        };
-    };
-    getVehicle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Vehicle details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vehicle"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
-    updateVehicle: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VehicleMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Vehicle updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Vehicle"];
-                };
-            };
-        };
-    };
-    listDrivers: {
-        parameters: {
-            query?: {
-                page?: components["parameters"]["Page"];
-                perPage?: components["parameters"]["PerPage"];
-                sort?: components["parameters"]["Sort"];
-                filter?: components["parameters"]["Filter"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Paginated drivers */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedDrivers"];
-                };
-            };
-        };
-    };
-    createDriver: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DriverMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Driver registered */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Driver"];
-                };
-            };
-        };
-    };
-    getDriver: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Driver details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Driver"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
-    updateDriver: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DriverMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Driver updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Driver"];
-                };
-            };
-        };
-    };
-    changeDriverStatus: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    status: components["schemas"]["DriverStatus"];
-                };
-            };
-        };
-        responses: {
-            /** @description Status updated */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Driver"];
-                };
-            };
-        };
-    };
-    listTrips: {
-        parameters: {
-            query?: {
-                page?: components["parameters"]["Page"];
-                perPage?: components["parameters"]["PerPage"];
-                sort?: components["parameters"]["Sort"];
-                filter?: components["parameters"]["Filter"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Paginated trips */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedTrips"];
-                };
-            };
-        };
-    };
-    createTrip: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TripMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Trip created as Draft */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TripDetails"];
-                };
-            };
-            400: components["responses"]["BadRequest"];
-        };
-    };
-    getTrip: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Trip Details */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TripDetails"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
-    dispatchTrip: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Trip Dispatched */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TripDetails"];
-                };
-            };
-            400: components["responses"]["BadRequest"];
-        };
-    };
-    completeTrip: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    finalOdometer: number;
-                    /** @description Liters consumed */
-                    fuelConsumed: number;
-                    /** @description Total cost of fuel */
-                    fuelCost: number;
-                    /** @default 0 */
-                    tollExpenses?: number;
-                };
-            };
-        };
-        responses: {
-            /** @description Trip Completed */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TripDetails"];
-                };
-            };
-        };
-    };
-    cancelTrip: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Trip Cancelled */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TripDetails"];
-                };
-            };
-        };
-    };
-    listMaintenance: {
-        parameters: {
-            query?: {
-                page?: components["parameters"]["Page"];
-                perPage?: components["parameters"]["PerPage"];
-                sort?: components["parameters"]["Sort"];
-                filter?: components["parameters"]["Filter"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Paginated maintenance records */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedMaintenanceLogs"];
-                };
-            };
-        };
-    };
-    startMaintenance: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["MaintenanceMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Maintenance started */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MaintenanceLog"];
-                };
-            };
-        };
-    };
-    completeMaintenance: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: components["parameters"]["PathId"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": {
-                    finalCost: number;
-                    notes?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Maintenance completed */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MaintenanceLog"];
-                };
-            };
-        };
-    };
-    listExpenses: {
-        parameters: {
-            query?: {
-                page?: components["parameters"]["Page"];
-                perPage?: components["parameters"]["PerPage"];
-                sort?: components["parameters"]["Sort"];
-                filter?: components["parameters"]["Filter"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Paginated expenses */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PaginatedExpenses"];
-                };
-            };
-        };
-    };
-    createExpense: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ExpenseMutateRequest"];
-            };
-        };
-        responses: {
-            /** @description Expense added */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Expense"];
-                };
-            };
-        };
-    };
-    getAnalytics: {
-        parameters: {
-            query?: {
-                month?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Analytics and Chart Data */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AnalyticsResponse"];
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-        };
-    };
-}
+export type operations = Record<string, never>;

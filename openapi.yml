@@ -1,44 +1,34 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: TransitOps API
-  description: Smart Transport Operations Platform (End-to-End Logistics & Fleet Management)
+  description: Smart Transport Operations Platform
   version: 1.0.0
 servers:
   - url: http://localhost:8000/api
     description: Local Development Server
 
-tags:
-  - name: Dashboards
-    description: Aggregated KPI and overview endpoints for specific views
-  - name: Vehicles
-    description: Vehicle registry and lifecycle management
-  - name: Drivers
-    description: Driver profile and compliance management
-  - name: Trips
-    description: Dispatching, routing, and trip lifecycles
-  - name: Maintenance
-    description: Vehicle maintenance and servicing logs
-  - name: Expenses
-    description: Fuel logging and operational cost tracking
-  - name: Reports
-    description: Financial and operational analytics
-
-security:
-  - bearerAuth: []
-
 paths:
-  # ---------------------------------------------------------
-  # DASHBOARDS
-  # ---------------------------------------------------------
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get Current User
+      responses:
+        "200":
+          description: Current user details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSummary"
+
   /dashboard/general:
     get:
-      tags:
-        - Dashboards
+      tags: [Dashboards]
       summary: Get General Dashboard (KPIs)
-      description: Returns fully assembled KPI data for the main dashboard including active vehicles, fleet utilization, and quick status counts.
-      operationId: getGeneralDashboard
       parameters:
-        - $ref: "#/components/parameters/RegionFilter"
+        - in: query
+          name: region
+          schema:
+            type: string
       responses:
         "200":
           description: Dashboard data
@@ -46,16 +36,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DashboardGeneral"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /dashboard/dispatcher:
     get:
-      tags:
-        - Dashboards
+      tags: [Dashboards]
       summary: Get Dispatcher Live Board
-      description: Returns grouped lists of trips (Draft, Dispatched, Completed) and a quick list of available vehicles and drivers for the dispatcher view.
-      operationId: getDispatcherDashboard
       responses:
         "200":
           description: Dispatcher board data
@@ -63,19 +48,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DashboardDispatcher"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
-  # ---------------------------------------------------------
-  # VEHICLES
-  # ---------------------------------------------------------
   /vehicles:
     get:
-      tags:
-        - Vehicles
+      tags: [Vehicles]
       summary: List Vehicles
-      description: Paginated and searchable listing of vehicles for the Vehicle Registry.
-      operationId: listVehicles
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
@@ -89,11 +66,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedVehicles"
     post:
-      tags:
-        - Vehicles
+      tags: [Vehicles]
       summary: Register Vehicle
-      description: Add a new vehicle to the registry. Default status is AVAILABLE.
-      operationId: createVehicle
       requestBody:
         required: true
         content:
@@ -110,10 +84,8 @@ paths:
 
   /vehicles/{id}:
     get:
-      tags:
-        - Vehicles
+      tags: [Vehicles]
       summary: Get Vehicle
-      operationId: getVehicle
       parameters:
         - $ref: "#/components/parameters/PathId"
       responses:
@@ -123,13 +95,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Vehicle"
-        "404":
-          $ref: "#/components/responses/NotFound"
     put:
-      tags:
-        - Vehicles
+      tags: [Vehicles]
       summary: Update Vehicle
-      operationId: updateVehicle
       parameters:
         - $ref: "#/components/parameters/PathId"
       requestBody:
@@ -145,17 +113,105 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Vehicle"
+    delete:
+      tags: [Vehicles]
+      summary: Delete Vehicle
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "204":
+          description: Vehicle deleted
 
-  # ---------------------------------------------------------
-  # DRIVERS
-  # ---------------------------------------------------------
+  /vehicles/{vehicle_id}/image:
+    post:
+      tags: [Uploads & Documents]
+      summary: Upload Vehicle Image
+      parameters:
+        - name: vehicle_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Image uploaded
+
+  /vehicles/{vehicle_id}/documents:
+    get:
+      tags: [Uploads & Documents]
+      summary: List Vehicle Documents
+      parameters:
+        - name: vehicle_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+    post:
+      tags: [Uploads & Documents]
+      summary: Upload Vehicle Document
+      parameters:
+        - name: vehicle_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, documentType]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                documentType:
+                  type: string
+                expiryDate:
+                  type: string
+                  format: date
+      responses:
+        "201":
+          description: Document uploaded
+
+  /documents/{document_id}:
+    delete:
+      tags: [Uploads & Documents]
+      summary: Delete Document
+      parameters:
+        - name: document_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Document deleted
+
   /drivers:
     get:
-      tags:
-        - Drivers
+      tags: [Drivers]
       summary: List Drivers
-      description: Paginated list of drivers for Driver Management.
-      operationId: listDrivers
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
@@ -169,10 +225,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedDrivers"
     post:
-      tags:
-        - Drivers
+      tags: [Drivers]
       summary: Register Driver
-      operationId: createDriver
       requestBody:
         required: true
         content:
@@ -189,10 +243,8 @@ paths:
 
   /drivers/{id}:
     get:
-      tags:
-        - Drivers
+      tags: [Drivers]
       summary: Get Driver
-      operationId: getDriver
       parameters:
         - $ref: "#/components/parameters/PathId"
       responses:
@@ -202,13 +254,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Driver"
-        "404":
-          $ref: "#/components/responses/NotFound"
     put:
-      tags:
-        - Drivers
+      tags: [Drivers]
       summary: Update Driver
-      operationId: updateDriver
       parameters:
         - $ref: "#/components/parameters/PathId"
       requestBody:
@@ -224,14 +272,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Driver"
+    delete:
+      tags: [Drivers]
+      summary: Delete Driver
+      parameters:
+        - $ref: "#/components/parameters/PathId"
+      responses:
+        "204":
+          description: Driver deleted
 
   /drivers/{id}/status:
     patch:
-      tags:
-        - Drivers
+      tags: [Drivers]
       summary: Toggle Driver Status
-      description: Allows Safety Officer or Manager to manually suspend or mark a driver off-duty.
-      operationId: changeDriverStatus
       parameters:
         - $ref: "#/components/parameters/PathId"
       requestBody:
@@ -240,8 +293,7 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - status
+              required: [status]
               properties:
                 status:
                   $ref: "#/components/schemas/DriverStatus"
@@ -253,15 +305,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/Driver"
 
-  # ---------------------------------------------------------
-  # TRIPS & DISPATCHING
-  # ---------------------------------------------------------
   /trips:
     get:
-      tags:
-        - Trips
+      tags: [Trips]
       summary: List Trips
-      operationId: listTrips
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
@@ -275,11 +322,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedTrips"
     post:
-      tags:
-        - Trips
+      tags: [Trips]
       summary: Create Trip (Draft)
-      description: Creates a draft trip. Validates that Cargo Weight <= Vehicle Capacity.
-      operationId: createTrip
       requestBody:
         required: true
         content:
@@ -293,15 +337,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TripDetails"
-        "400":
-          $ref: "#/components/responses/BadRequest"
 
   /trips/{id}:
     get:
-      tags:
-        - Trips
+      tags: [Trips]
       summary: Get Trip Details
-      operationId: getTrip
       parameters:
         - $ref: "#/components/parameters/PathId"
       responses:
@@ -311,16 +351,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TripDetails"
-        "404":
-          $ref: "#/components/responses/NotFound"
 
   /trips/{id}/dispatch:
     post:
-      tags:
-        - Trips
+      tags: [Trips]
       summary: Dispatch Trip
-      description: Changes Trip to DISPATCHED. Automatically changes Vehicle and Driver status to ON_TRIP. Validates driver license is valid and both are AVAILABLE.
-      operationId: dispatchTrip
       parameters:
         - $ref: "#/components/parameters/PathId"
       responses:
@@ -330,16 +365,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TripDetails"
-        "400":
-          $ref: "#/components/responses/BadRequest"
 
   /trips/{id}/complete:
     post:
-      tags:
-        - Trips
+      tags: [Trips]
       summary: Complete Trip
-      description: Marks Trip COMPLETED. Restores Vehicle and Driver to AVAILABLE. Creates an automatic Fuel & Expense log. Updates Vehicle Odometer.
-      operationId: completeTrip
       parameters:
         - $ref: "#/components/parameters/PathId"
       requestBody:
@@ -347,23 +377,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - finalOdometer
-                - fuelConsumed
-                - fuelCost
-              properties:
-                finalOdometer:
-                  type: integer
-                fuelConsumed:
-                  type: number
-                  description: Liters consumed
-                fuelCost:
-                  type: number
-                  description: Total cost of fuel
-                tollExpenses:
-                  type: number
-                  default: 0
+              $ref: "#/components/schemas/CompleteTripRequest"
       responses:
         "200":
           description: Trip Completed
@@ -374,11 +388,8 @@ paths:
 
   /trips/{id}/cancel:
     post:
-      tags:
-        - Trips
+      tags: [Trips]
       summary: Cancel Trip
-      description: Cancels a trip. If it was dispatched, restores Vehicle and Driver to AVAILABLE.
-      operationId: cancelTrip
       parameters:
         - $ref: "#/components/parameters/PathId"
       responses:
@@ -389,15 +400,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/TripDetails"
 
-  # ---------------------------------------------------------
-  # MAINTENANCE
-  # ---------------------------------------------------------
   /maintenance:
     get:
-      tags:
-        - Maintenance
+      tags: [Maintenance]
       summary: List Maintenance Logs
-      operationId: listMaintenance
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
@@ -411,11 +417,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedMaintenanceLogs"
     post:
-      tags:
-        - Maintenance
+      tags: [Maintenance]
       summary: Create Maintenance Record
-      description: Starts a maintenance record. Automatically changes the vehicle status to IN_SHOP.
-      operationId: startMaintenance
       requestBody:
         required: true
         content:
@@ -432,11 +435,8 @@ paths:
 
   /maintenance/{id}/complete:
     post:
-      tags:
-        - Maintenance
+      tags: [Maintenance]
       summary: Complete Maintenance
-      description: Closes the maintenance record, updates total operational cost, and restores vehicle to AVAILABLE.
-      operationId: completeMaintenance
       parameters:
         - $ref: "#/components/parameters/PathId"
       requestBody:
@@ -444,14 +444,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - finalCost
-              properties:
-                finalCost:
-                  type: number
-                notes:
-                  type: string
+              $ref: "#/components/schemas/CompleteMaintenanceRequest"
       responses:
         "200":
           description: Maintenance completed
@@ -460,16 +453,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/MaintenanceLog"
 
-  # ---------------------------------------------------------
-  # FUEL & EXPENSES
-  # ---------------------------------------------------------
   /expenses:
     get:
-      tags:
-        - Expenses
+      tags: [Expenses]
       summary: List Expenses
-      description: View fuel logs, tolls, and maintenance costs.
-      operationId: listExpenses
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PerPage"
@@ -483,11 +470,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaginatedExpenses"
     post:
-      tags:
-        - Expenses
+      tags: [Expenses]
       summary: Add Misc Expense
-      description: Manually log an expense (e.g., ad-hoc fuel, tolls).
-      operationId: createExpense
       requestBody:
         required: true
         content:
@@ -502,22 +486,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Expense"
 
-  # ---------------------------------------------------------
-  # REPORTS & ANALYTICS
-  # ---------------------------------------------------------
   /reports/analytics:
     get:
-      tags:
-        - Reports
+      tags: [Reports]
       summary: Get Fleet Analytics
-      description: Returns fully assembled chart data and KPIs for the Financial Analyst (Fuel Efficiency, Fleet Utilization, Operational Costs, Vehicle ROI).
-      operationId: getAnalytics
       parameters:
-        - name: month
-          in: query
+        - in: query
+          name: month
           schema:
             type: string
-            example: "2026-07"
+            description: "Format: YYYY-MM"
       responses:
         "200":
           description: Analytics and Chart Data
@@ -525,16 +503,142 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AnalyticsResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
+
+  /ai/fleet-readiness/{vehicle_id}:
+    get:
+      tags: [AI Readiness]
+      summary: Get AI Fleet Readiness Score
+      parameters:
+        - name: vehicle_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Readiness Score payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AIFleetReadiness"
+
+  /ai/driver-risk/{driver_id}:
+    get:
+      tags: [AI Readiness]
+      summary: Get AI Driver Risk Score
+      parameters:
+        - name: driver_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Risk Score payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AIDriverRisk"
+
+  /fleet-locations:
+    get:
+      tags: [Fleet GPS]
+      summary: List Fleet Locations
+      parameters:
+        - in: query
+          name: activeOnly
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: List of fleet positions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FleetLocationResponse"
+    post:
+      tags: [Fleet GPS]
+      summary: Publish Location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FleetLocationIn"
+      responses:
+        "202":
+          description: Position recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FleetLocation"
+
+  /fleet-locations/simulate:
+    post:
+      tags: [Fleet GPS]
+      summary: Simulate Fleet Locations
+      parameters:
+        - in: query
+          name: vehicleId
+          schema:
+            type: string
+        - in: query
+          name: latitude
+          schema:
+            type: number
+            default: 12.9716
+        - in: query
+          name: longitude
+          schema:
+            type: number
+            default: 77.5946
+      responses:
+        "200":
+          description: Simulated positions generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generated:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FleetLocation"
+
+  /fleet-locations/stream:
+    get:
+      tags: [Fleet GPS]
+      summary: SSE Stream for GPS
+      responses:
+        "200":
+          description: Text Event Stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /fleet-locations/{vehicle_id}:
+    get:
+      tags: [Fleet GPS]
+      summary: Get Specific Vehicle Location
+      parameters:
+        - name: vehicle_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Vehicle GPS Position
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FleetLocation"
 
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
   parameters:
     PathId:
       name: id
@@ -542,7 +646,6 @@ components:
       required: true
       schema:
         type: string
-        format: uuid
     Page:
       name: page
       in: query
@@ -565,42 +668,10 @@ components:
       in: query
       schema:
         type: string
-    RegionFilter:
-      name: region
-      in: query
-      schema:
-        type: string
-        description: Filter dashboard by region
-
-  responses:
-    BadRequest:
-      description: Bad Request (e.g. Validation Error like Cargo Weight > Capacity)
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
-    NotFound:
-      description: Resource Not Found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorResponse"
 
   schemas:
-    # ------------------ Common ------------------
     PaginationMeta:
       type: object
-      required:
-        - page
-        - perPage
-        - totalItems
-        - totalPages
       properties:
         page:
           type: integer
@@ -611,33 +682,14 @@ components:
         totalPages:
           type: integer
 
-    ErrorResponse:
-      type: object
-      required:
-        - error
-        - message
-      properties:
-        error:
-          type: boolean
-          default: true
-        message:
-          type: string
-        details:
-          type: object
-          additionalProperties: true
-
     ChartData:
       type: object
-      required:
-        - label
-        - value
       properties:
         label:
           type: string
         value:
           type: number
 
-    # ------------------ Enums ------------------
     VehicleStatus:
       type: string
       enum: [AVAILABLE, ON_TRIP, IN_SHOP, RETIRED]
@@ -654,38 +706,27 @@ components:
       type: string
       enum: [FUEL, TOLL, MAINTENANCE, OTHER]
 
-    # ------------------ Models ------------------
     UserSummary:
       type: object
-      required:
-        - id
-        - name
-        - role
       properties:
         id:
           type: string
-          format: uuid
+        email:
+          type: string
         name:
           type: string
         role:
           type: string
-          enum: [FLEET_MANAGER, DRIVER, SAFETY_OFFICER, FINANCIAL_ANALYST]
+        phone:
+          type: string
+        isActive:
+          type: boolean
 
     Vehicle:
       type: object
-      required:
-        - id
-        - registrationNumber
-        - model
-        - type
-        - capacityKg
-        - odometer
-        - acquisitionCost
-        - status
       properties:
         id:
           type: string
-          format: uuid
         registrationNumber:
           type: string
         model:
@@ -695,7 +736,7 @@ components:
         capacityKg:
           type: number
         odometer:
-          type: integer
+          type: number
         acquisitionCost:
           type: number
         status:
@@ -703,12 +744,7 @@ components:
 
     VehicleMutateRequest:
       type: object
-      required:
-        - registrationNumber
-        - model
-        - type
-        - capacityKg
-        - acquisitionCost
+      required: [registrationNumber, model, type, capacityKg, acquisitionCost]
       properties:
         registrationNumber:
           type: string
@@ -726,19 +762,9 @@ components:
 
     Driver:
       type: object
-      required:
-        - id
-        - name
-        - licenseNumber
-        - licenseCategory
-        - expiryDate
-        - contact
-        - safetyScore
-        - status
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
         licenseNumber:
@@ -751,19 +777,13 @@ components:
         contact:
           type: string
         safetyScore:
-          type: integer
-          description: "Scale 0-100"
+          type: number
         status:
           $ref: "#/components/schemas/DriverStatus"
 
     DriverMutateRequest:
       type: object
-      required:
-        - name
-        - licenseNumber
-        - licenseCategory
-        - expiryDate
-        - contact
+      required: [name, licenseNumber, licenseCategory, expiryDate, contact]
       properties:
         name:
           type: string
@@ -779,19 +799,9 @@ components:
 
     TripDetails:
       type: object
-      required:
-        - id
-        - source
-        - destination
-        - vehicle
-        - driver
-        - cargoWeight
-        - plannedDistance
-        - status
       properties:
         id:
           type: string
-          format: uuid
         source:
           type: string
         destination:
@@ -813,17 +823,12 @@ components:
           type: string
           format: date-time
         etaMinutes:
-          type: integer
+          type: number
 
     TripMutateRequest:
       type: object
       required:
-        - source
-        - destination
-        - vehicleId
-        - driverId
-        - cargoWeight
-        - plannedDistance
+        [source, destination, vehicleId, driverId, cargoWeight, plannedDistance]
       properties:
         source:
           type: string
@@ -831,28 +836,32 @@ components:
           type: string
         vehicleId:
           type: string
-          format: uuid
         driverId:
           type: string
-          format: uuid
         cargoWeight:
           type: number
         plannedDistance:
           type: number
 
+    CompleteTripRequest:
+      type: object
+      required: [finalOdometer, fuelConsumed, fuelCost]
+      properties:
+        finalOdometer:
+          type: integer
+        fuelConsumed:
+          type: number
+        fuelCost:
+          type: number
+        tollExpenses:
+          type: number
+          default: 0
+
     MaintenanceLog:
       type: object
-      required:
-        - id
-        - vehicle
-        - serviceType
-        - cost
-        - date
-        - status
       properties:
         id:
           type: string
-          format: uuid
         vehicle:
           $ref: "#/components/schemas/Vehicle"
         serviceType:
@@ -868,14 +877,10 @@ components:
 
     MaintenanceMutateRequest:
       type: object
-      required:
-        - vehicleId
-        - serviceType
-        - expectedCost
+      required: [vehicleId, serviceType, expectedCost]
       properties:
         vehicleId:
           type: string
-          format: uuid
         serviceType:
           type: string
         expectedCost:
@@ -884,31 +889,30 @@ components:
           type: string
           format: date
 
+    CompleteMaintenanceRequest:
+      type: object
+      required: [finalCost]
+      properties:
+        finalCost:
+          type: number
+        notes:
+          type: string
+
     Expense:
       type: object
-      required:
-        - id
-        - vehicleId
-        - type
-        - amount
-        - date
       properties:
         id:
           type: string
-          format: uuid
         vehicleId:
           type: string
-          format: uuid
         tripId:
           type: string
-          format: uuid
         type:
           $ref: "#/components/schemas/ExpenseType"
         amount:
           type: number
         liters:
           type: number
-          description: "Only applicable if type is FUEL"
         date:
           type: string
           format: date
@@ -917,18 +921,12 @@ components:
 
     ExpenseMutateRequest:
       type: object
-      required:
-        - vehicleId
-        - type
-        - amount
-        - date
+      required: [vehicleId, type, amount, date]
       properties:
         vehicleId:
           type: string
-          format: uuid
         tripId:
           type: string
-          format: uuid
         type:
           $ref: "#/components/schemas/ExpenseType"
         amount:
@@ -941,7 +939,6 @@ components:
         notes:
           type: string
 
-    # ------------------ Paginated Responses ------------------
     PaginatedVehicles:
       type: object
       properties:
@@ -992,13 +989,8 @@ components:
           items:
             $ref: "#/components/schemas/Expense"
 
-    # ------------------ Dashboard & Analytics Responses ------------------
     DashboardGeneral:
       type: object
-      required:
-        - kpis
-        - vehicleStatusChart
-        - recentTrips
       properties:
         kpis:
           type: object
@@ -1028,12 +1020,6 @@ components:
 
     DashboardDispatcher:
       type: object
-      required:
-        - draftedTrips
-        - activeTrips
-        - completedTrips
-        - availableVehicles
-        - availableDrivers
       properties:
         draftedTrips:
           type: array
@@ -1058,21 +1044,14 @@ components:
 
     AnalyticsResponse:
       type: object
-      required:
-        - kpis
-        - monthlyRevenueChart
-        - costliestVehiclesChart
-        - vehicleROI
       properties:
         kpis:
           type: object
           properties:
             fuelEfficiencyAvg:
               type: number
-              description: "km/l"
             fleetUtilization:
               type: number
-              description: "%"
             totalOperationalCost:
               type: number
             totalRevenue:
@@ -1087,7 +1066,6 @@ components:
             $ref: "#/components/schemas/ChartData"
         vehicleROI:
           type: array
-          description: "[Revenue - (Maintenance + Fuel)] / Acquisition Cost per vehicle"
           items:
             type: object
             properties:
@@ -1095,3 +1073,104 @@ components:
                 $ref: "#/components/schemas/Vehicle"
               roiPercent:
                 type: number
+
+    AIFleetReadiness:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+        safeToDispatch:
+          type: boolean
+        readinessScore:
+          type: integer
+        riskLevel:
+          type: string
+          enum: [LOW, MEDIUM, HIGH]
+        reasons:
+          type: array
+          items:
+            type: string
+        model:
+          type: string
+        extensionPoint:
+          type: string
+
+    AIDriverRisk:
+      type: object
+      properties:
+        driverId:
+          type: string
+        riskScore:
+          type: number
+        licenseDaysRemaining:
+          type: integer
+        incidentCount:
+          type: integer
+        model:
+          type: string
+
+    FleetLocationIn:
+      type: object
+      required: [vehicleId, latitude, longitude]
+      properties:
+        vehicleId:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        speedKph:
+          type: number
+        heading:
+          type: number
+        accuracyMeters:
+          type: number
+        recordedAt:
+          type: string
+          format: date-time
+
+    FleetLocation:
+      type: object
+      properties:
+        vehicleId:
+          type: string
+        registrationNumber:
+          type: string
+        model:
+          type: string
+        status:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        speedKph:
+          type: number
+        heading:
+          type: number
+        accuracyMeters:
+          type: number
+        recordedAt:
+          type: string
+          format: date-time
+        receivedAt:
+          type: string
+          format: date-time
+        reportedBy:
+          type: string
+        ageSeconds:
+          type: integer
+        isStale:
+          type: boolean
+
+    FleetLocationResponse:
+      type: object
+      properties:
+        refreshAfterSeconds:
+          type: integer
+        count:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FleetLocation"
