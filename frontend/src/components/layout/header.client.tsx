@@ -2,19 +2,41 @@
 
 import { Bell, Search } from "lucide-react";
 import Image from "next/image";
+import PocketBase from "pocketbase";
 import { useEffect, useState } from "react";
 import type { components } from "@/../generated/openapi-schema";
 import { getCurrentUserAction } from "./header.action";
+
+const PB_URL =
+  process.env.NEXT_PUBLIC_PB_URL || "https://db-clarity.arinji.com";
+const DEFAULT_AVATAR =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBMaplVy8boQ_Fb8BnRjeASD4nwNUZvgjbpgMvew9cDZ5qxvaJ18tSXr0g6dFw_ptW1EZe_pmOQQ0B4EyHlApmOoiFQdH1U_-k5KGPgRQqLUbL-vjheEpcsu8a2Jxbudx02MKsOdiEX1wKEeqjOzV41vvXteWQgcJ6ESgNOhyBAwuR1AKhkEG4F2OWCfPo3343dnnItiVVXEu01gVDoHP3aLbxOY79veGFNVR_RqEaqXsqSgiuNeOk_G74Lu5g59OghKxtMY3hvDWww";
 
 export function Header() {
   const [user, setUser] = useState<components["schemas"]["UserSummary"] | null>(
     null,
   );
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadUser() {
       const data = await getCurrentUserAction();
-      if (data) setUser(data);
+      if (data) {
+        setUser(data);
+
+        // Fetch full user record to retrieve 'avatar' attribute via PB client SDK
+        try {
+          const pb = new PocketBase(PB_URL);
+          const record = await pb.collection("users").getOne(data.id);
+          if (record.avatar) {
+            setAvatarUrl(
+              `${PB_URL}/api/files/users/${record.id}/${record.avatar}`,
+            );
+          }
+        } catch (err) {
+          console.error("Failed to load user avatar in header:", err);
+        }
+      }
     }
     loadUser();
   }, []);
@@ -47,13 +69,14 @@ export function Header() {
               {user?.role || "Staff"}
             </p>
           </div>
-          <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMaplVy8boQ_Fb8BnRjeASD4nwNUZvgjbpgMvew9cDZ5qxvaJ18tSXr0g6dFw_ptW1EZe_pmOQQ0B4EyHlApmOoiFQdH1U_-k5KGPgRQqLUbL-vjheEpcsu8a2Jxbudx02MKsOdiEX1wKEeqjOzV41vvXteWQgcJ6ESgNOhyBAwuR1AKhkEG4F2OWCfPo3343dnnItiVVXEu01gVDoHP3aLbxOY79veGFNVR_RqEaqXsqSgiuNeOk_G74Lu5g59OghKxtMY3hvDWww"
-            alt="Profile"
-            width={32}
-            height={32}
-            className="rounded-full border border-white/60 object-cover shadow-sm"
-          />
+          <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/60 bg-surface-variant shadow-sm">
+            <Image
+              src={avatarUrl || DEFAULT_AVATAR}
+              alt="Profile"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
       </div>
     </header>

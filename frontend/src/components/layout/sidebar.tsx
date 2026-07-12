@@ -11,21 +11,67 @@ import {
   Truck,
   Wrench,
 } from "lucide-react";
-import Link from "next/link";
+import LinkComponent from "next/link";
 import { usePathname } from "next/navigation";
 
-export function Sidebar() {
+type SidebarProps = {
+  userRole: string | null;
+};
+
+export function Sidebar({ userRole }: SidebarProps) {
   const pathname = usePathname();
+  console.log(userRole);
 
   const navItems = [
-    { href: "/", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-    { href: "/vehicles", icon: <Truck size={20} />, label: "Fleet" },
-    { href: "/drivers", icon: <IdCard size={20} />, label: "Drivers" },
-    { href: "/trips", icon: <Route size={20} />, label: "Trips" },
-    { href: "/maintenance", icon: <Wrench size={20} />, label: "Maintenance" },
-    { href: "/expenses", icon: <Fuel size={20} />, label: "Fuel & Expenses" },
-    { href: "/analytics", icon: <LineChart size={20} />, label: "Analytics" },
-  ];
+    {
+      href: "/",
+      icon: <LayoutDashboard size={20} />,
+      label: "Dashboard",
+      allowed: [
+        "ADMIN",
+        "FLEET_MANAGER",
+        "DISPATCHER",
+        "SAFETY_OFFICER",
+        "FINANCIAL_ANALYST",
+      ],
+    },
+    {
+      href: "/vehicles",
+      icon: <Truck size={20} />,
+      label: "Fleet",
+      allowed: ["ADMIN", "FLEET_MANAGER", "SAFETY_OFFICER"],
+    },
+    {
+      href: "/drivers",
+      icon: <IdCard size={20} />,
+      label: "Drivers",
+      allowed: ["ADMIN", "FLEET_MANAGER", "SAFETY_OFFICER"],
+    },
+    {
+      href: "/trips",
+      icon: <Route size={20} />,
+      label: "Trips",
+      allowed: ["ADMIN", "FLEET_MANAGER", "DISPATCHER"],
+    },
+    {
+      href: "/maintenance",
+      icon: <Wrench size={20} />,
+      label: "Maintenance",
+      allowed: ["ADMIN", "FLEET_MANAGER"],
+    },
+    {
+      href: "/expenses",
+      icon: <Fuel size={20} />,
+      label: "Fuel & Expenses",
+      allowed: ["ADMIN", "FLEET_MANAGER", "FINANCIAL_ANALYST"],
+    },
+    {
+      href: "/analytics",
+      icon: <LineChart size={20} />,
+      label: "Analytics",
+      allowed: ["ADMIN", "FLEET_MANAGER", "FINANCIAL_ANALYST"],
+    },
+  ].filter((item) => !userRole || item.allowed.includes(userRole));
 
   return (
     <nav className="glass-panel fixed top-4 bottom-4 left-4 z-40 hidden w-64 flex-col gap-6 rounded-xl p-6 md:flex">
@@ -77,7 +123,7 @@ function NavItem({
   active?: boolean;
 }) {
   return (
-    <Link
+    <LinkComponent
       href={href}
       className={`relative flex items-center gap-4 rounded-full px-4 py-3 text-sm transition-colors duration-300 active:scale-95 ${
         active
@@ -96,6 +142,6 @@ function NavItem({
         {icon}
         <span className="font-medium">{label}</span>
       </span>
-    </Link>
+    </LinkComponent>
   );
 }

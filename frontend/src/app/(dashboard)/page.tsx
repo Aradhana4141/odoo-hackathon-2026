@@ -11,7 +11,6 @@ export default async function DashboardPage() {
   try {
     const client = await getAPIClient();
     const { data, error } = await client.GET("/dashboard/general", {});
-    console.log(data);
     if (!error && data) {
       dashboardData = data;
     }

@@ -1,6 +1,86 @@
-import { ChevronDown, ShieldAlert, Sliders } from "lucide-react";
+"use client";
+
+import {
+  Camera,
+  ChevronDown,
+  Loader2,
+  ShieldAlert,
+  Sliders,
+} from "lucide-react";
+import Image from "next/image";
+import PocketBase from "pocketbase";
+import { useEffect, useState } from "react";
+import { getCurrentUserAction } from "@/components/layout/header.action";
+
+const PB_URL = process.env.NEXT_PUBLIC_PB_URL;
 
 export default function SettingsPage() {
+  const [user, setUser] = useState<any>(null);
+  const [pbUser, setPbUser] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  // 1. Fetch current user context
+  useEffect(() => {
+    async function loadUser() {
+      const data = await getCurrentUserAction();
+      if (data) {
+        setUser(data);
+      }
+    }
+    loadUser();
+  }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      const pb = new PocketBase(PB_URL);
+      pb.collection("users")
+        .getOne(user.id)
+        .then((record) => {
+          setPbUser(record);
+        })
+        .catch((err) => console.error("Failed to load PB user profile:", err));
+    }
+  }, [user]);
+
+  // 3. Handle file selection and upload using PB SDK
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id) return;
+
+    setIsUploading(true);
+    try {
+      const pb = new PocketBase(PB_URL);
+
+      // Extract client-side token cookie to authorize update
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("token="))
+        ?.split("=")[1];
+
+      if (token) {
+        pb.authStore.save(token, null);
+      }
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      // Perform update on the 'users' collection
+      const updatedRecord = await pb
+        .collection("users")
+        .update(user.id, formData);
+      setPbUser(updatedRecord);
+      alert("Profile photo updated successfully!");
+    } catch (err: any) {
+      alert(`Upload failed: ${err.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const avatarUrl = pbUser?.avatar
+    ? `${PB_URL}/api/files/users/${pbUser.id}/${pbUser.avatar}`
+    : null;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="mb-2">
@@ -14,6 +94,53 @@ export default function SettingsPage() {
 
       <div className="grid w-full grid-cols-1 gap-6 xl:grid-cols-12">
         <div className="flex flex-col gap-6 xl:col-span-4">
+          {/* User Profile Card */}
+          <div className="flex flex-col items-center rounded-3xl border border-white/40 bg-white/60 p-6 text-center shadow-xs backdrop-blur-xl">
+            <div className="group relative mb-4">
+              <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-white/80 bg-surface-variant shadow-md">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt="User Profile"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <span className="font-bold text-2xl text-primary uppercase">
+                    {user?.name?.substring(0, 2) || "TO"}
+                  </span>
+                )}
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  </div>
+                )}
+              </div>
+              <label
+                htmlFor="avatar-upload"
+                className="absolute right-0 bottom-0 cursor-pointer rounded-full border border-white bg-primary p-1.5 text-white shadow-md transition-transform hover:bg-primary/95 active:scale-95"
+              >
+                <Camera className="h-4 w-4" />
+                <input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  disabled={isUploading}
+                  className="hidden"
+                />
+              </label>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg text-on-surface">
+                {user?.name || "TransitOps User"}
+              </h3>
+              <p className="mt-1 font-semibold text-on-surface-variant text-xs uppercase tracking-wider">
+                {user?.role || "Staff"}
+              </p>
+            </div>
+          </div>
+
           <div className="rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xs backdrop-blur-xl">
             <div className="mb-6 flex items-center gap-2 border-white/30 border-b pb-4">
               <Sliders className="h-4.5 w-4.5 text-primary" />
@@ -92,18 +219,6 @@ export default function SettingsPage() {
                 </button>
               </div>
             </form>
-          </div>
-
-          <div className="flex items-center justify-between rounded-3xl border border-white/40 bg-white/60 p-6 shadow-xs backdrop-blur-xl">
-            <div>
-              <p className="mb-1 font-bold text-on-surface-variant text-xs">
-                System Status
-              </p>
-              <p className="font-semibold text-on-surface text-sm">
-                All Systems Operational
-              </p>
-            </div>
-            <div className="h-3 w-3 animate-pulse rounded-full bg-primary-fixed shadow-[0_0_10px_rgba(111,251,190,0.8)]" />
           </div>
         </div>
 

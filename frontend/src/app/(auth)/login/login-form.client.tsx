@@ -85,27 +85,6 @@ export function LoginForm() {
         >
           Select Role
         </label>
-        <div className="hide-scrollbar flex gap-1 overflow-x-auto rounded-xl bg-surface-container-highest/50 p-1">
-          {ROLES.map((role, idx) => (
-            <label
-              key={role}
-              htmlFor={`role-${role}`}
-              className="flex-none cursor-pointer"
-            >
-              <input
-                id={`role-${role}`}
-                type="radio"
-                name="role"
-                value={role}
-                defaultChecked={idx === 0}
-                className="peer sr-only"
-              />
-              <div className="whitespace-nowrap rounded-lg px-4 py-2 text-on-surface-variant text-sm transition-all hover:bg-white/40 peer-checked:bg-white peer-checked:text-primary peer-checked:shadow-sm">
-                {role}
-              </div>
-            </label>
-          ))}
-        </div>
       </div>
 
       <div className="flex items-center justify-between pt-4">
