@@ -3,6 +3,7 @@
 import {
   BrainCircuit,
   Edit2,
+  FileText,
   FileUp,
   MoreVertical,
   Plus,
@@ -15,6 +16,8 @@ import {
   checkVehicleReadinessAction,
   createVehicleAction,
   deleteVehicleAction,
+  deleteVehicleDocumentAction,
+  getVehicleDocumentsAction,
   updateVehicleAction,
   uploadVehicleDocumentAction,
 } from "./vehicle.action";
@@ -46,6 +49,12 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
     null,
   );
 
+  const [viewingDocsVehicleId, setViewingDocsVehicleId] = useState<
+    string | null
+  >(null);
+  const [vehicleDocs, setVehicleDocs] = useState<any[]>([]);
+  const [isLoadingDocs, setIsLoadingDocs] = useState(false);
+
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,11 +69,30 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
     if (uploadState?.success) setUploadingVehicleId(null);
   }, [uploadState]);
 
+  useEffect(() => {
+    if (viewingDocsVehicleId) {
+      setIsLoadingDocs(true);
+      getVehicleDocumentsAction(viewingDocsVehicleId).then((docs) => {
+        setVehicleDocs(docs);
+        setIsLoadingDocs(false);
+      });
+    } else {
+      setVehicleDocs([]);
+    }
+  }, [viewingDocsVehicleId]);
+
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to remove this vehicle?")) {
       await deleteVehicleAction(id);
     }
     setOpenMenuId(null);
+  };
+
+  const handleDeleteDoc = async (docId: string) => {
+    if (confirm("Delete this document?")) {
+      await deleteVehicleDocumentAction(docId);
+      setVehicleDocs((prev) => prev.filter((d) => d.id !== docId));
+    }
   };
 
   const handleCheckReadiness = async (id: string) => {
@@ -91,7 +119,7 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
         </button>
       </div>
 
-      <div className="glass-panel overflow-visible rounded-3xl pb-16 shadow-xs">
+      <div className="glass-panel overflow-visible rounded-3xl shadow-xs pb-16">
         <table className="w-full text-left">
           <thead>
             <tr className="border-white/40 border-b bg-white/20">
@@ -137,7 +165,7 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
                   </button>
 
                   {openMenuId === vehicle.id && (
-                    <div className="absolute top-10 right-8 z-50 flex w-48 flex-col rounded-xl border border-outline-variant/20 bg-white py-2 text-left shadow-xl">
+                    <div className="absolute top-10 right-8 z-50 flex w-52 flex-col rounded-xl border border-outline-variant/20 bg-white py-2 text-left shadow-xl">
                       <button
                         onClick={() => {
                           setEditingVehicle(vehicle);
@@ -155,6 +183,15 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
                         className="flex cursor-pointer items-center gap-2 px-4 py-2 text-left font-semibold text-xs hover:bg-surface-container"
                       >
                         <FileUp className="h-4 w-4" /> Upload Document
+                      </button>
+                      <button
+                        onClick={() => {
+                          setViewingDocsVehicleId(vehicle.id);
+                          setOpenMenuId(null);
+                        }}
+                        className="flex cursor-pointer items-center gap-2 px-4 py-2 text-left font-semibold text-xs hover:bg-surface-container"
+                      >
+                        <FileText className="h-4 w-4" /> View Documents
                       </button>
                       <button
                         onClick={() => handleCheckReadiness(vehicle.id)}
@@ -177,6 +214,70 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
           </tbody>
         </table>
       </div>
+
+      {/* View Documents Modal */}
+      {viewingDocsVehicleId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+          <div className="glass-panel w-full max-w-lg rounded-3xl p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-bold text-lg">Vehicle Documents</h3>
+              <button
+                onClick={() => setViewingDocsVehicleId(null)}
+                className="cursor-pointer text-outline hover:text-error"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-3 max-h-96 overflow-y-auto">
+              {isLoadingDocs ? (
+                <p className="text-sm text-on-surface-variant text-center py-4">
+                  Loading documents...
+                </p>
+              ) : vehicleDocs.length === 0 ? (
+                <p className="text-sm text-on-surface-variant text-center py-4">
+                  No documents found for this vehicle.
+                </p>
+              ) : (
+                vehicleDocs.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between rounded-xl border border-white/60 bg-white/40 p-4 shadow-sm"
+                  >
+                    <div>
+                      <h4 className="font-semibold text-sm">
+                        {doc.documentType}
+                      </h4>
+                      <p className="text-xs text-on-surface-variant mt-1">
+                        Expiry:{" "}
+                        {doc.expiryDate ? doc.expiryDate.split(" ")[0] : "None"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/files/Documents/${doc.id}/${doc.file}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-semibold text-primary hover:underline"
+                      >
+                        Download
+                      </a>
+                      <button
+                        onClick={() => handleDeleteDoc(doc.id)}
+                        className="text-error hover:text-error/70 p-1 rounded-full bg-error/10 ml-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Keep the Edit Modal, Upload Modal, and Create Drawer exactly as provided in the previous message */}
 
       {/* Edit Vehicle Modal */}
       {editingVehicle && (
@@ -201,10 +302,7 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
               <input type="hidden" name="vehicleId" value={editingVehicle.id} />
 
               <div className="flex flex-col gap-1.5">
-                <label
-                  htmlFor="registrationNumber"
-                  className="font-semibold text-xs"
-                >
+                <label className="font-semibold text-xs">
                   Registration Number
                 </label>
                 <input
@@ -217,9 +315,7 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="model" className="font-semibold text-xs">
-                  Make & Model
-                </label>
+                <label className="font-semibold text-xs">Make & Model</label>
                 <input
                   name="model"
                   type="text"
@@ -385,6 +481,7 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
         </div>
       )}
 
+      {/* Side Drawer: Register Vehicle */}
       {isOpen && (
         <button
           className="fixed inset-0 z-40 bg-black/20 backdrop-blur-xs transition-opacity"
@@ -420,7 +517,6 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
             </div>
           )}
 
-          {/* Create form elements identical to previous, keeping for side drawer layout */}
           <div className="flex flex-col gap-1.5">
             <label className="font-semibold text-on-surface-variant text-xs uppercase tracking-wider">
               Registration Number

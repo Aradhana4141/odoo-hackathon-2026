@@ -109,3 +109,25 @@ export async function checkVehicleReadinessAction(vehicleId: string) {
     return null;
   }
 }
+export async function getVehicleDocumentsAction(vehicleId: string) {
+  try {
+    const client = await getAPIClient();
+    const { data } = await client.GET("/vehicles/{vehicle_id}/documents", {
+      params: { path: { vehicle_id: vehicleId } },
+    });
+    return data || [];
+  } catch (_) {
+    return [];
+  }
+}
+
+export async function deleteVehicleDocumentAction(documentId: string) {
+  try {
+    const client = await getAPIClient();
+    await client.DELETE("/documents/{document_id}", {
+      params: { path: { document_id: documentId } },
+    });
+  } catch (_) {}
+  revalidatePath("/vehicles");
+  return { success: true };
+}
