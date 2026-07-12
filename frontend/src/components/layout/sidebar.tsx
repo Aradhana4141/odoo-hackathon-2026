@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import {
   Fuel,
   IdCard,
@@ -10,7 +11,6 @@ import {
   Truck,
   Wrench,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
