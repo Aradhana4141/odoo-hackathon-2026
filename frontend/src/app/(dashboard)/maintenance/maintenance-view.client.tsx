@@ -72,11 +72,13 @@ export function MaintenanceView({
                   id="vehicleId"
                   name="vehicleId"
                   required
+                  defaultValue=""
                   className="w-full cursor-pointer appearance-none border-none bg-transparent px-3 py-3 pl-10 text-on-surface text-sm focus:ring-0"
                 >
-                  <option value="" disabled selected>
+                  <option value="" disabled>
                     Select vehicle in pool...
                   </option>
+
                   {activeVehicles.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.registrationNumber} ({v.model})
