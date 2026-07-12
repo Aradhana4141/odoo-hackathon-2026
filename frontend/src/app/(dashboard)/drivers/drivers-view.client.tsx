@@ -2,17 +2,25 @@
 
 import {
   BadgeCheck,
+  BrainCircuit,
   Calendar,
   ChevronDown,
   Hash,
+  MoreVertical,
   Phone,
   Plus,
+  Trash2,
   User,
   X,
 } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 import type { components } from "@/../generated/openapi-schema";
-import { createDriverAction } from "./driver.action";
+import {
+  changeDriverStatusAction,
+  checkDriverRiskAction,
+  createDriverAction,
+  deleteDriverAction,
+} from "./driver.action";
 
 type DriversViewProps = {
   initialDrivers: components["schemas"]["PaginatedDrivers"];
@@ -25,11 +33,40 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
     null,
   );
 
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+
   useEffect(() => {
     if (state?.success) {
       setIsOpen(false);
     }
   }, [state]);
+
+  const handleStatusChange = async (
+    id: string,
+    status: "AVAILABLE" | "OFF_DUTY" | "SUSPENDED",
+  ) => {
+    await changeDriverStatusAction(id, status);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to remove this driver?")) {
+      await deleteDriverAction(id);
+    }
+    setOpenMenuId(null);
+  };
+
+  const handleCheckRisk = async (id: string) => {
+    const risk = await checkDriverRiskAction(id);
+    if (risk) {
+      alert(
+        `AI Risk Score: ${risk.riskScore}/100\nModel: ${risk.model}\nIncident Count: ${risk.incidentCount}`,
+      );
+    } else {
+      alert("Unable to fetch risk score at this time.");
+    }
+    setOpenMenuId(null);
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -52,8 +89,8 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
         </button>
       </div>
 
-      <div className="glass-panel overflow-hidden rounded-3xl shadow-xs">
-        <div className="overflow-x-auto">
+      <div className="glass-panel overflow-visible rounded-3xl shadow-xs">
+        <div className="overflow-x-auto overflow-y-visible pb-12">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-surface-container-low/50">
@@ -74,6 +111,9 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
                 </th>
                 <th className="px-6 py-4 text-right font-semibold text-on-surface-variant text-xs uppercase">
                   Status
+                </th>
+                <th className="px-6 py-4 text-right font-semibold text-on-surface-variant text-xs uppercase">
+                  Actions
                 </th>
               </tr>
             </thead>
@@ -156,6 +196,66 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
                       {driver.status}
                     </span>
                   </td>
+                  <td className="relative px-6 py-4 text-right">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenMenuId(
+                          openMenuId === driver.id ? null : driver.id,
+                        )
+                      }
+                      className="cursor-pointer rounded-full p-2 transition-colors hover:bg-white/50"
+                    >
+                      <MoreVertical className="h-4 w-4 text-outline" />
+                    </button>
+
+                    {openMenuId === driver.id && (
+                      <div className="absolute top-12 right-12 z-50 flex w-48 flex-col rounded-xl border border-outline-variant/20 bg-white py-2 text-left shadow-xl">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleStatusChange(driver.id, "AVAILABLE")
+                          }
+                          className="cursor-pointer px-4 py-2 text-left font-semibold text-xs transition-colors hover:bg-surface-container"
+                        >
+                          Mark Available
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleStatusChange(driver.id, "OFF_DUTY")
+                          }
+                          className="cursor-pointer px-4 py-2 text-left font-semibold text-xs transition-colors hover:bg-surface-container"
+                        >
+                          Mark Off-Duty
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleStatusChange(driver.id, "SUSPENDED")
+                          }
+                          className="cursor-pointer px-4 py-2 text-left font-semibold text-error text-xs transition-colors hover:bg-surface-container"
+                        >
+                          Suspend License
+                        </button>
+                        <div className="my-1 border-outline-variant/20 border-t" />
+                        <button
+                          type="button"
+                          onClick={() => handleCheckRisk(driver.id)}
+                          className="flex cursor-pointer items-center gap-2 px-4 py-2 text-left font-semibold text-secondary text-xs transition-colors hover:bg-surface-container"
+                        >
+                          <BrainCircuit className="h-4 w-4" /> AI Risk Check
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(driver.id)}
+                          className="flex cursor-pointer items-center gap-2 px-4 py-2 text-left font-semibold text-error text-xs transition-colors hover:bg-error-container"
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete Driver
+                        </button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -163,15 +263,21 @@ export function DriversView({ initialDrivers }: DriversViewProps) {
         </div>
       </div>
 
+      {/* Backdrop for side drawer */}
       {isOpen && (
         <button
+          type="button"
+          aria-label="Close panel"
           className="fixed inset-0 z-50 bg-black/20 backdrop-blur-xs transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
 
+      {/* Side Drawer: Register New Driver */}
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col border-white/40 border-l bg-white/80 shadow-2xl backdrop-blur-2xl transition-transform duration-400 ease-out md:w-120 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 bottom-0 z-50 flex w-full flex-col border-white/40 border-l bg-white/80 shadow-2xl backdrop-blur-2xl transition-transform duration-400 ease-out md:w-120 ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <div className="flex items-center justify-between border-white/40 border-b bg-white/40 p-6">
           <div>

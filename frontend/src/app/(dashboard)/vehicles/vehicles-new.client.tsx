@@ -2,10 +2,15 @@
 
 import {
   BrainCircuit,
+  ChevronDown,
+  DollarSign,
   FileUp,
+  Hash,
   MoreVertical,
   Plus,
   Trash2,
+  Truck,
+  Weight,
   X,
 } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
@@ -180,35 +185,54 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
                 value={uploadingVehicleId}
               />
               <div>
-                <label className="mb-1 block font-semibold text-xs">
+                <label
+                  htmlFor="documentType"
+                  className="mb-1 block font-semibold text-xs"
+                >
                   Document Type
                 </label>
                 <select
+                  id="documentType"
                   name="documentType"
                   required
+                  defaultValue=""
                   className="glass-input w-full rounded-xl p-3 text-sm"
                 >
+                  <option value="" disabled>
+                    Select document type
+                  </option>
                   <option value="Registration">Registration Certificate</option>
                   <option value="Insurance">Insurance Policy</option>
                   <option value="Permit">Transit Permit</option>
                 </select>
               </div>
+
               <div>
-                <label className="mb-1 block font-semibold text-xs">
+                <label
+                  htmlFor="file"
+                  className="mb-1 block font-semibold text-xs"
+                >
                   File Attachment (PDF/Image)
                 </label>
                 <input
+                  id="file"
                   name="file"
                   type="file"
                   required
+                  accept=".pdf,image/*"
                   className="glass-input w-full rounded-xl p-2 text-sm file:mr-4 file:rounded-full file:border-0 file:bg-primary/10 file:px-4 file:py-2 file:font-semibold file:text-primary file:text-xs hover:file:bg-primary/20"
                 />
               </div>
+
               <div>
-                <label className="mb-1 block font-semibold text-xs">
+                <label
+                  htmlFor="expiryDate"
+                  className="mb-1 block font-semibold text-xs"
+                >
                   Expiry Date (Optional)
                 </label>
                 <input
+                  id="expiryDate"
                   name="expiryDate"
                   type="date"
                   className="glass-input w-full rounded-xl p-3 text-sm"
@@ -227,7 +251,169 @@ export function VehiclesView({ initialData }: VehiclesViewProps) {
         </div>
       )}
 
-      {/* Keep the original side drawer form for Create Vehicle down here ... */}
+      {isOpen && (
+        <button
+          className="fixed inset-0 z-50 bg-black/20 backdrop-blur-xs transition-opacity"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <div
+        className={`fixed inset-y-0 right-0 z-50 flex w-full flex-col border-white/40 border-l bg-white/80 shadow-2xl backdrop-blur-2xl transition-transform duration-400 ease-out md:w-120 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="flex items-center justify-between border-white/40 border-b bg-white/40 px-6 py-6">
+          <div>
+            <h3 className="font-bold text-lg text-primary">Register Vehicle</h3>
+            <p className="mt-1 text-on-surface-variant text-xs">
+              Add a new operational asset to the active registry.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="cursor-pointer rounded-full p-2 text-on-surface-variant transition-colors hover:bg-white/40"
+            onClick={() => setIsOpen(false)}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <form
+          action={createAction}
+          className="flex flex-1 flex-col gap-5 overflow-y-auto p-6"
+        >
+          {createState?.error && (
+            <div className="rounded-lg border border-error/20 bg-error-container p-3 font-medium text-error text-xs">
+              {createState.error}
+            </div>
+          )}
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="font-semibold text-on-surface-variant text-xs uppercase tracking-wider"
+              htmlFor="registrationNumber"
+            >
+              Registration Number
+            </label>
+            <div className="glass-input flex items-center rounded-xl px-3 py-2.5">
+              <Hash className="mr-2 h-4 w-4 text-outline" />
+              <input
+                id="registrationNumber"
+                name="registrationNumber"
+                type="text"
+                required
+                placeholder="e.g. TRK-9920"
+                className="w-full border-none bg-transparent p-0 text-on-surface text-sm uppercase placeholder:normal-case focus:ring-0"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="font-semibold text-on-surface-variant text-xs uppercase tracking-wider"
+              htmlFor="model"
+            >
+              Make & Model
+            </label>
+            <div className="glass-input flex items-center rounded-xl px-3 py-2.5">
+              <Truck className="mr-2 h-4 w-4 text-outline" />
+              <input
+                id="model"
+                name="model"
+                type="text"
+                required
+                placeholder="e.g. Volvo FH16"
+                className="w-full border-none bg-transparent p-0 text-on-surface text-sm focus:ring-0"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label
+              className="font-semibold text-on-surface-variant text-xs uppercase tracking-wider"
+              htmlFor="type"
+            >
+              Vehicle Type
+            </label>
+            <div className="glass-input relative rounded-xl">
+              <Truck className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-outline" />
+              <select
+                id="type"
+                name="type"
+                required
+                className="w-full cursor-pointer appearance-none border-none bg-transparent px-3 py-2.5 pl-10 text-on-surface text-sm focus:ring-0"
+              >
+                <option value="" disabled defaultValue={"Heavy Duty Truck"}>
+                  Select type...
+                </option>
+                <option value="Heavy Duty Truck">Heavy Duty Truck</option>
+                <option value="Medium Duty Box">Medium Duty Box</option>
+                <option value="Light Commercial Van">
+                  Light Commercial Van
+                </option>
+              </select>
+              <ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-4 w-4 text-outline" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="font-semibold text-on-surface-variant text-xs uppercase tracking-wider"
+                htmlFor="capacityKg"
+              >
+                Capacity (Kg)
+              </label>
+              <div className="glass-input flex items-center rounded-xl px-3 py-2.5">
+                <Weight className="mr-2 h-4 w-4 text-outline" />
+                <input
+                  id="capacityKg"
+                  name="capacityKg"
+                  type="number"
+                  required
+                  placeholder="0"
+                  className="w-full border-none bg-transparent p-0 text-on-surface text-sm focus:ring-0"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label
+                className="font-semibold text-on-surface-variant text-xs uppercase tracking-wider"
+                htmlFor="acquisitionCost"
+              >
+                Acquisition Cost
+              </label>
+              <div className="glass-input flex items-center rounded-xl px-3 py-2.5">
+                <DollarSign className="mr-2 h-4 w-4 text-outline" />
+                <input
+                  id="acquisitionCost"
+                  name="acquisitionCost"
+                  type="number"
+                  required
+                  placeholder="0"
+                  className="w-full border-none bg-transparent p-0 text-on-surface text-sm focus:ring-0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-auto flex justify-end gap-3 border-white/40 border-t bg-white/30 p-6">
+            <button
+              type="button"
+              className="cursor-pointer rounded-full border border-white/60 bg-white/50 px-6 py-2.5 font-semibold text-on-surface-variant text-xs transition-all hover:bg-white hover:text-primary"
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isCreatePending}
+              className="cursor-pointer rounded-full bg-primary px-6 py-2.5 font-semibold text-white text-xs transition-all hover:bg-primary/90 disabled:opacity-50"
+            >
+              {isCreatePending ? "Saving..." : "Save Vehicle"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

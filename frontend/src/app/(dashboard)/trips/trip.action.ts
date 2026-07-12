@@ -34,7 +34,7 @@ export async function createTripAction(_prevState: any, formData: FormData) {
         plannedDistance,
       },
     });
-    if (error) return { error: error.message || "Failed to create trip" };
+    if (error) return { error: parseApiError(error) };
   } catch (e: any) {
     return { error: e.message };
   }
