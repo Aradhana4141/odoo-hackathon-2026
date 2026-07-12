@@ -2,8 +2,23 @@
 
 import { Bell, Search } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import type { components } from "@/../generated/openapi-schema";
+import { getCurrentUserAction } from "./header.action";
 
 export function Header() {
+  const [user, setUser] = useState<components["schemas"]["UserSummary"] | null>(
+    null,
+  );
+
+  useEffect(() => {
+    async function loadUser() {
+      const data = await getCurrentUserAction();
+      if (data) setUser(data);
+    }
+    loadUser();
+  }, []);
+
   return (
     <header className="glass-panel fixed top-4 right-4 left-4 z-30 flex h-16 items-center justify-between rounded-full px-8 transition-all focus-within:ring-2 focus-within:ring-primary/50 md:left-72">
       <div className="group relative max-w-md flex-1">
@@ -25,9 +40,11 @@ export function Header() {
 
         <div className="flex cursor-pointer items-center gap-3 rounded-full p-1 pr-4 transition-all hover:bg-white/40">
           <div className="hidden text-right sm:block">
-            <p className="font-bold text-on-surface text-sm">Manager K.</p>
+            <p className="font-bold text-on-surface text-sm">
+              {user?.name || "TransitOps User"}
+            </p>
             <p className="text-[10px] text-on-surface-variant uppercase tracking-wider">
-              Dispatcher
+              {user?.role || "Staff"}
             </p>
           </div>
           <Image
