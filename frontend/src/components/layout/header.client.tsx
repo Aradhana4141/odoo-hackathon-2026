@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Bell } from "lucide-react";
 import Image from "next/image";
 import PocketBase from "pocketbase";
 import { useEffect, useState } from "react";
@@ -42,16 +42,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="glass-panel fixed top-4 right-4 left-4 z-30 flex h-16 items-center justify-between rounded-full px-8 transition-all focus-within:ring-2 focus-within:ring-primary/50 md:left-72">
-      <div className="group relative max-w-md flex-1">
-        <Search className="-translate-y-1/2 absolute top-1/2 left-4 h-4 w-4 text-outline transition-colors group-focus-within:text-primary" />
-        <input
-          type="text"
-          placeholder="Search fleet, drivers, routes..."
-          className="glass-input h-10 w-full rounded-full pr-4 pl-11 text-on-surface text-sm placeholder:text-outline/70"
-        />
-      </div>
-
+    <header className="glass-panel fixed top-4 right-4 left-4 z-30 flex h-16 items-center justify-end rounded-full px-8 transition-all focus-within:ring-2 focus-within:ring-primary/50 md:left-72">
       <div className="flex items-center gap-4">
         <button className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/40 transition-all hover:bg-white/60">
           <Bell className="h-5 w-5 text-on-surface-variant" />
