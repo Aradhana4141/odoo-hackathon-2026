@@ -17,9 +17,14 @@ import { createExpenseAction } from "./expense.action";
 type ExpensesViewProps = {
   initialExpenses: components["schemas"]["PaginatedExpenses"];
   vehicles: components["schemas"]["Vehicle"][];
+  trips: components["schemas"]["TripDetails"][];
 };
 
-export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
+export function ExpensesView({
+  initialExpenses,
+  vehicles,
+  trips,
+}: ExpensesViewProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(
     createExpenseAction,
@@ -274,15 +279,25 @@ export function ExpensesView({ initialExpenses, vehicles }: ExpensesViewProps) {
                 className="mb-1 block font-semibold text-on-surface-variant text-xs"
                 htmlFor="tripId"
               >
-                Trip ID (Optional)
+                Associated Trip (Optional)
               </label>
-              <input
-                id="tripId"
-                name="tripId"
-                type="text"
-                placeholder="e.g. TRP-1234..."
-                className="glass-input h-11 w-full rounded-xl px-4 font-mono text-sm"
-              />
+              <div className="glass-input relative h-11 rounded-xl">
+                <select
+                  id="tripId"
+                  name="tripId"
+                  className="w-full cursor-pointer appearance-none border-none bg-transparent px-3 py-3 pr-10 text-on-surface text-sm outline-none focus:ring-0"
+                  defaultValue=""
+                >
+                  <option value="">No associated trip</option>
+                  {trips.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.id.substring(0, 8).toUpperCase()} ({t.source} &rarr;{" "}
+                      {t.destination})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute top-3.5 right-3 h-4 w-4 text-on-surface-variant" />
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
