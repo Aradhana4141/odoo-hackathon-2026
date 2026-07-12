@@ -36,7 +36,8 @@ async def upload_vehicle_document(
 
 @router.get("/vehicles/{vehicle_id}/documents")
 async def list_vehicle_documents(vehicle_id:str,user:FleetManager):
-    return await pb.list("Documents",filter=f'vehicle="{vehicle_id}"',sort="-created",expand="vehicle",perPage=100)
+    result = await pb.list("Documents",filter=f'vehicle="{vehicle_id}"',sort="-created",expand="vehicle",perPage=100)
+    return result.get("items", [])
 
 
 @router.delete("/documents/{document_id}",status_code=204)
