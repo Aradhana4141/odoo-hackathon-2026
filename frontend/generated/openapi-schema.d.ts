@@ -286,7 +286,7 @@ export interface paths {
                 content: {
                     "multipart/form-data": {
                         /** Format: binary */
-                        image?: string;
+                        image: string;
                     };
                 };
             };
@@ -1202,8 +1202,8 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
-                            generated?: number;
-                            items?: components["schemas"]["FleetLocation"][];
+                            generated: number;
+                            items: components["schemas"]["FleetLocation"][];
                         };
                     };
                 };
@@ -1294,14 +1294,14 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         PaginationMeta: {
-            page?: number;
-            perPage?: number;
-            totalItems?: number;
-            totalPages?: number;
+            page: number;
+            perPage: number;
+            totalItems: number;
+            totalPages: number;
         };
         ChartData: {
-            label?: string;
-            value?: number;
+            label: string;
+            value: number;
         };
         /** @enum {string} */
         VehicleStatus: "AVAILABLE" | "ON_TRIP" | "IN_SHOP" | "RETIRED";
@@ -1312,22 +1312,22 @@ export interface components {
         /** @enum {string} */
         ExpenseType: "FUEL" | "TOLL" | "MAINTENANCE" | "OTHER";
         UserSummary: {
-            id?: string;
-            email?: string;
-            name?: string;
-            role?: string;
-            phone?: string;
-            isActive?: boolean;
+            id: string;
+            email: string;
+            name: string;
+            role: string;
+            phone: string;
+            isActive: boolean;
         };
         Vehicle: {
-            id?: string;
-            registrationNumber?: string;
-            model?: string;
-            type?: string;
-            capacityKg?: number;
-            odometer?: number;
-            acquisitionCost?: number;
-            status?: components["schemas"]["VehicleStatus"];
+            id: string;
+            registrationNumber: string;
+            model: string;
+            type: string;
+            capacityKg: number;
+            odometer: number;
+            acquisitionCost: number;
+            status: components["schemas"]["VehicleStatus"];
         };
         VehicleMutateRequest: {
             registrationNumber: string;
@@ -1339,15 +1339,15 @@ export interface components {
             acquisitionCost: number;
         };
         Driver: {
-            id?: string;
-            name?: string;
-            licenseNumber?: string;
-            licenseCategory?: string;
+            id: string;
+            name: string;
+            licenseNumber: string;
+            licenseCategory: string;
             /** Format: date */
-            expiryDate?: string;
-            contact?: string;
-            safetyScore?: number;
-            status?: components["schemas"]["DriverStatus"];
+            expiryDate: string;
+            contact: string;
+            safetyScore: number;
+            status: components["schemas"]["DriverStatus"];
         };
         DriverMutateRequest: {
             name: string;
@@ -1358,14 +1358,14 @@ export interface components {
             contact: string;
         };
         TripDetails: {
-            id?: string;
-            source?: string;
-            destination?: string;
-            vehicle?: components["schemas"]["Vehicle"];
-            driver?: components["schemas"]["Driver"];
-            cargoWeight?: number;
-            plannedDistance?: number;
-            status?: components["schemas"]["TripStatus"];
+            id: string;
+            source: string;
+            destination: string;
+            vehicle: components["schemas"]["Vehicle"];
+            driver: components["schemas"]["Driver"];
+            cargoWeight: number;
+            plannedDistance: number;
+            status: components["schemas"]["TripStatus"];
             /** Format: date-time */
             dispatchTime?: string;
             /** Format: date-time */
@@ -1388,14 +1388,14 @@ export interface components {
             tollExpenses: number;
         };
         MaintenanceLog: {
-            id?: string;
-            vehicle?: components["schemas"]["Vehicle"];
-            serviceType?: string;
-            cost?: number;
+            id: string;
+            vehicle: components["schemas"]["Vehicle"];
+            serviceType: string;
+            cost: number;
             /** Format: date */
-            date?: string;
+            date: string;
             /** @enum {string} */
-            status?: "ACTIVE" | "COMPLETED";
+            status: "ACTIVE" | "COMPLETED";
         };
         MaintenanceMutateRequest: {
             vehicleId: string;
@@ -1409,14 +1409,14 @@ export interface components {
             notes?: string;
         };
         Expense: {
-            id?: string;
-            vehicleId?: string;
+            id: string;
+            vehicleId: string;
             tripId?: string;
-            type?: components["schemas"]["ExpenseType"];
-            amount?: number;
+            type: components["schemas"]["ExpenseType"];
+            amount: number;
             liters?: number;
             /** Format: date */
-            date?: string;
+            date: string;
             notes?: string;
         };
         ExpenseMutateRequest: {
@@ -1430,75 +1430,75 @@ export interface components {
             notes?: string;
         };
         PaginatedVehicles: {
-            meta?: components["schemas"]["PaginationMeta"];
-            items?: components["schemas"]["Vehicle"][];
+            meta: components["schemas"]["PaginationMeta"];
+            items: components["schemas"]["Vehicle"][];
         };
         PaginatedDrivers: {
-            meta?: components["schemas"]["PaginationMeta"];
-            items?: components["schemas"]["Driver"][];
+            meta: components["schemas"]["PaginationMeta"];
+            items: components["schemas"]["Driver"][];
         };
         PaginatedTrips: {
-            meta?: components["schemas"]["PaginationMeta"];
-            items?: components["schemas"]["TripDetails"][];
+            meta: components["schemas"]["PaginationMeta"];
+            items: components["schemas"]["TripDetails"][];
         };
         PaginatedMaintenanceLogs: {
-            meta?: components["schemas"]["PaginationMeta"];
-            items?: components["schemas"]["MaintenanceLog"][];
+            meta: components["schemas"]["PaginationMeta"];
+            items: components["schemas"]["MaintenanceLog"][];
         };
         PaginatedExpenses: {
-            meta?: components["schemas"]["PaginationMeta"];
-            items?: components["schemas"]["Expense"][];
+            meta: components["schemas"]["PaginationMeta"];
+            items: components["schemas"]["Expense"][];
         };
         DashboardGeneral: {
-            kpis?: {
-                activeVehicles?: number;
-                availableVehicles?: number;
-                vehiclesInMaintenance?: number;
-                activeTrips?: number;
-                pendingTrips?: number;
-                driversOnDuty?: number;
-                fleetUtilizationPercent?: number;
+            kpis: {
+                activeVehicles: number;
+                availableVehicles: number;
+                vehiclesInMaintenance: number;
+                activeTrips: number;
+                pendingTrips: number;
+                driversOnDuty: number;
+                fleetUtilizationPercent: number;
             };
-            vehicleStatusChart?: components["schemas"]["ChartData"][];
-            recentTrips?: components["schemas"]["TripDetails"][];
+            vehicleStatusChart: components["schemas"]["ChartData"][];
+            recentTrips: components["schemas"]["TripDetails"][];
         };
         DashboardDispatcher: {
-            draftedTrips?: components["schemas"]["TripDetails"][];
-            activeTrips?: components["schemas"]["TripDetails"][];
-            completedTrips?: components["schemas"]["TripDetails"][];
-            availableVehicles?: components["schemas"]["Vehicle"][];
-            availableDrivers?: components["schemas"]["Driver"][];
+            draftedTrips: components["schemas"]["TripDetails"][];
+            activeTrips: components["schemas"]["TripDetails"][];
+            completedTrips: components["schemas"]["TripDetails"][];
+            availableVehicles: components["schemas"]["Vehicle"][];
+            availableDrivers: components["schemas"]["Driver"][];
         };
         AnalyticsResponse: {
-            kpis?: {
-                fuelEfficiencyAvg?: number;
-                fleetUtilization?: number;
-                totalOperationalCost?: number;
-                totalRevenue?: number;
+            kpis: {
+                fuelEfficiencyAvg: number;
+                fleetUtilization: number;
+                totalOperationalCost: number;
+                totalRevenue: number;
             };
-            monthlyRevenueChart?: components["schemas"]["ChartData"][];
-            costliestVehiclesChart?: components["schemas"]["ChartData"][];
-            vehicleROI?: {
-                vehicle?: components["schemas"]["Vehicle"];
-                roiPercent?: number;
+            monthlyRevenueChart: components["schemas"]["ChartData"][];
+            costliestVehiclesChart: components["schemas"]["ChartData"][];
+            vehicleROI: {
+                vehicle: components["schemas"]["Vehicle"];
+                roiPercent: number;
             }[];
         };
         AIFleetReadiness: {
-            vehicleId?: string;
-            safeToDispatch?: boolean;
-            readinessScore?: number;
+            vehicleId: string;
+            safeToDispatch: boolean;
+            readinessScore: number;
             /** @enum {string} */
-            riskLevel?: "LOW" | "MEDIUM" | "HIGH";
-            reasons?: string[];
-            model?: string;
-            extensionPoint?: string;
+            riskLevel: "LOW" | "MEDIUM" | "HIGH";
+            reasons: string[];
+            model: string;
+            extensionPoint: string;
         };
         AIDriverRisk: {
-            driverId?: string;
-            riskScore?: number;
-            licenseDaysRemaining?: number;
-            incidentCount?: number;
-            model?: string;
+            driverId: string;
+            riskScore: number;
+            licenseDaysRemaining: number;
+            incidentCount: number;
+            model: string;
         };
         FleetLocationIn: {
             vehicleId: string;
@@ -1511,27 +1511,27 @@ export interface components {
             recordedAt?: string;
         };
         FleetLocation: {
-            vehicleId?: string;
-            registrationNumber?: string;
-            model?: string;
-            status?: string;
-            latitude?: number;
-            longitude?: number;
-            speedKph?: number;
-            heading?: number;
-            accuracyMeters?: number;
+            vehicleId: string;
+            registrationNumber: string;
+            model: string;
+            status: string;
+            latitude: number;
+            longitude: number;
+            speedKph: number;
+            heading: number;
+            accuracyMeters: number;
             /** Format: date-time */
-            recordedAt?: string;
+            recordedAt: string;
             /** Format: date-time */
-            receivedAt?: string;
-            reportedBy?: string;
-            ageSeconds?: number;
-            isStale?: boolean;
+            receivedAt: string;
+            reportedBy: string;
+            ageSeconds: number;
+            isStale: boolean;
         };
         FleetLocationResponse: {
-            refreshAfterSeconds?: number;
-            count?: number;
-            items?: components["schemas"]["FleetLocation"][];
+            refreshAfterSeconds: number;
+            count: number;
+            items: components["schemas"]["FleetLocation"][];
         };
     };
     responses: never;
