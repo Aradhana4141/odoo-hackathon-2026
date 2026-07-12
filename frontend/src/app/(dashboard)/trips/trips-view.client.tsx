@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Flag,
+  History,
   MapPin,
   Route,
   Send,
@@ -86,15 +87,11 @@ export function TripsView({ boardData }: TripsViewProps) {
             Manage and dispatch fleet operations
           </p>
         </div>
-        {/* Progress Bar Graphic */}
-        <div className="hidden w-full max-w-2xl flex-1 md:block">
-          {/* ... keeping existing graphic styling ... */}
-        </div>
       </div>
 
       <div className="flex w-full flex-col items-start gap-6 lg:flex-row">
         {/* Create Trip Form (Left Column) */}
-        <div className="glass-panel flex w-full flex-col rounded-3xl p-6 lg:w-[40%]">
+        <div className="glass-panel flex w-full flex-col rounded-3xl p-6 lg:w-[30%]">
           <div className="mb-6 flex items-center justify-between border-white/30 border-b pb-4">
             <h3 className="font-bold text-lg text-on-surface">Create Trip</h3>
             <Route className="h-5 w-5 text-primary" />
@@ -111,8 +108,6 @@ export function TripsView({ boardData }: TripsViewProps) {
               </div>
             )}
 
-            {/* Inputs: source, destination, distance, weight, vehicle, driver */}
-            {/* ... keeping existing create form fields for brevity ... */}
             <div className="flex flex-col gap-1">
               <label
                 className="mb-1 font-semibold text-on-surface-variant text-xs uppercase"
@@ -242,14 +237,14 @@ export function TripsView({ boardData }: TripsViewProps) {
         </div>
 
         {/* Live Board (Right Column) */}
-        <div className="glass-panel flex h-[calc(100vh-14rem)] w-full flex-col rounded-3xl p-6 lg:w-[60%]">
+        <div className="glass-panel flex h-[calc(100vh-14rem)] w-full flex-col rounded-3xl p-6 lg:w-[70%]">
           <div className="mb-6 flex items-center justify-between border-white/30 border-b pb-4">
             <h3 className="flex items-center gap-2 font-bold text-lg text-on-surface">
               Live Dispatch Board
             </h3>
           </div>
 
-          <div className="grid flex-1 grid-cols-1 gap-6 overflow-hidden md:grid-cols-2">
+          <div className="grid flex-1 grid-cols-1 gap-6 overflow-hidden md:grid-cols-2 xl:grid-cols-3">
             {/* Drafts */}
             <div className="flex flex-col gap-4 overflow-y-auto pr-2 pb-4">
               <div className="sticky top-0 z-10 flex items-center justify-between rounded-xl border border-white/30 bg-background/80 px-3 py-2 backdrop-blur-md">
@@ -335,6 +330,37 @@ export function TripsView({ boardData }: TripsViewProps) {
                   </div>
                   <div className="mt-3 text-outline text-xs">
                     {trip.driver.name} | ETA: {trip.etaMinutes ?? 45}m
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Completed / History */}
+            <div className="flex flex-col gap-4 overflow-y-auto pr-2 pb-4 opacity-80">
+              <div className="sticky top-0 z-10 flex items-center justify-between rounded-xl border border-white/30 bg-background/80 px-3 py-2 backdrop-blur-md">
+                <span className="font-bold text-outline text-xs uppercase tracking-wider">
+                  Completed
+                </span>
+                <span className="rounded-full bg-surface-variant px-2 py-0.5 font-bold text-[10px]">
+                  {boardData.completedTrips?.length || 0}
+                </span>
+              </div>
+              {boardData.completedTrips?.map((trip) => (
+                <div
+                  key={trip.id}
+                  className="rounded-2xl border border-white/40 bg-white/30 p-4 shadow-sm"
+                >
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="font-bold font-mono text-outline text-xs">
+                      {trip.id.substring(0, 8).toUpperCase()}
+                    </span>
+                    <History className="h-4 w-4 text-outline" />
+                  </div>
+                  <div className="font-semibold text-on-surface-variant text-xs">
+                    {trip.source} &rarr; {trip.destination}
+                  </div>
+                  <div className="mt-3 text-outline text-xs">
+                    {trip.driver.name} | {trip.cargoWeight}kg
                   </div>
                 </div>
               ))}
