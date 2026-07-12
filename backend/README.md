@@ -48,6 +48,8 @@ Gemini-backed features are available at `POST /api/llm/fleet-assistant/chat` and
 
 All paginated list endpoints accept PocketBase-compatible `page`, `perPage`, `sort`, `filter`, `expand`, `fields`, and `skipTotal` parameters. Vehicle and driver delete routes enforce active-workflow safeguards. Vehicle images and documents can be uploaded with multipart requests under `/api/vehicles/{vehicle_id}/image` and `/api/vehicles/{vehicle_id}/documents`.
 
+Reports calculate completed-trip revenue as distance multiplied by `REVENUE_RATE_PER_KM` (default `50`). Analytics and CSV support `period=day|week|month|all|custom`; custom ranges use `dateFrom` and `dateTo`. Analytics includes revenue per vehicle. `GET /api/reports/export/csv` includes revenue, expense categories, total expenses, and net profit; unassigned vehicle expenses are exported as separate rows.
+
 Set `PB_BATCH_ENABLED=true` only after enabling PocketBase's batch Web API in its dashboard. Dispatch and trip-completion transitions will then use transactional batch requests; otherwise the tested sequential fallback is used.
 
 ## Live fleet map

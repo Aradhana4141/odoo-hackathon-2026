@@ -17,6 +17,7 @@ class Settings(BaseModel):
     gps_refresh_seconds: int = int(os.getenv("GPS_REFRESH_SECONDS", "5"))
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    revenue_rate_per_km: float = float(os.getenv("REVENUE_RATE_PER_KM", "50"))
 
     @property
     def origins(self) -> list[str]:
