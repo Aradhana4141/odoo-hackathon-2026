@@ -14,3 +14,19 @@ export async function getAPIClient() {
 
   return client;
 }
+
+export function parseApiError(error: unknown): string {
+  if (!error) return "An unknown error occurred";
+
+  const err = error as any;
+
+  // FastApi usually returns detail arrays for validation, or standard message fields
+  if (err.message) return err.message;
+  if (err.detail) {
+    if (typeof err.detail === "string") return err.detail;
+    if (Array.isArray(err.detail))
+      return err.detail[0]?.msg || "Validation Error";
+  }
+
+  return "Failed to process request";
+}
