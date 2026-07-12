@@ -4,6 +4,7 @@ import { getAPIClient } from "@/utils/client";
 import { DashboardKPIs } from "./dashboard-kpis";
 import { DashboardStatus } from "./dashboard-status";
 import { DashboardTrips } from "./dashboard-trips.client";
+import { LiveTracker } from "./live-tracker.client";
 
 export default async function DashboardPage() {
   let dashboardData: components["schemas"]["DashboardGeneral"] | null = null;
@@ -16,6 +17,14 @@ export default async function DashboardPage() {
     }
   } catch (err) {
     console.error(err);
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="p-8 text-center font-semibold text-sm">
+        Establishing connection to fleet registry...
+      </div>
+    );
   }
 
   return (
@@ -37,6 +46,11 @@ export default async function DashboardPage() {
       </div>
 
       <DashboardKPIs kpis={dashboardData.kpis} />
+
+      {/* Live Map Grid Widget Insertion */}
+      <div className="w-full">
+        <LiveTracker />
+      </div>
 
       <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-12">
         <div className="md:col-span-8">
